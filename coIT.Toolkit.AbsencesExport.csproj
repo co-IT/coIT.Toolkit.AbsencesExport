@@ -1,0 +1,56 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <StartupObject>coIT.AbsencesExport.Program</StartupObject>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
+    <BaseOutputPath>..\..\build\coIT.AbsencesExport</BaseOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Ardalis.SmartEnum" Version="7.0.0" />
+    <PackageReference Include="coIT.Libraries.Clockodo" Version="1.0.0" />
+    <PackageReference Include="coIT.Libraries.Gdi" Version="1.0.0" />
+    <PackageReference Include="coIT.Libraries.TimeCard" Version="1.0.0" />
+    <PackageReference Include="coIT.Libraries.WinForms" Version="1.0.0" />
+    <PackageReference Include="CSharpFunctionalExtensions" Version="2.42.5" />
+    <PackageReference Include="Microsoft.DependencyValidation.Analyzers" Version="0.11.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="config\clockodo-mapping\clockodo-mapping-settings-Standardkonfiguration.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="config\clockodo-pointer.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="config\clockodo-settings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="config\gdi-pointer.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="config\gdi-settings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="config\timecard-mapping-pointer.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="config\clockodo-mapping-pointer.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="config\timecard-mapping\timecard-mapping-settings-Standardkonfiguration.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="config\timecard-pointer.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="config\timecard-settings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>
