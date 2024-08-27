@@ -1,4 +1,4 @@
-name: Clockodo Quick Actions bauen und Installer sowie Update erstellen
+name: Bauen und Installer sowie Update erstellen
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 jobs:
   clockodo-quickactions-installer-erstellen:
     runs-on: windows-latest
-    name: Clockodo Quick Actions Installer Bauen
+    name: Installer Bauen
     permissions:
       packages: write
       contents: write
@@ -24,7 +24,7 @@ jobs:
         run: dotnet nuget add source --username ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/co-IT/index.json"
 
       - name: Anwendung bauen
-        run: dotnet publish -c Release -r win-x64 ${{ github.workspace }}\coIT.Toolkit.QuickActions.csproj --property:PublishProfile="FolderProfile"
+        run: dotnet publish -c Release -r win-x64 ${{ github.workspace }}\coIT.Toolkit.AbsencesExport.csproj --property:PublishProfile="FolderProfile"
       
       - name: Installer bauen
         uses: caphyon/advinst-github-action@v2.0
@@ -32,9 +32,9 @@ jobs:
           advinst-version: '21.9'
           advinst-license: ${{ secrets.ADVINST_LICENSE_KEY }}
           advinst-enable-automation: 'true'
-          aip-path: ${{ github.workspace }}\coIT.Toolkit.QuickActions.Installer.aip
+          aip-path: ${{ github.workspace }}\coIT.Toolkit.AbsencesExport.Installer.aip
           aip-build-name: DefaultBuild
-          aip-package-name: coIT.Toolkit.QuickActions.Installer-${{github.ref_name}}.msi
+          aip-package-name: coIT.Toolkit.AbsencesExport.Installer-${{github.ref_name}}.msi
           aip-output-dir:  ${{ github.workspace }}\setup
           aip-commands: |
             SetVersion ${{github.ref_name}}
@@ -43,7 +43,7 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ${{ github.workspace }}\setup\coIT.Toolkit.QuickActions.Installer-${{github.ref_name}}.msi
+          file: ${{ github.workspace }}\setup\coIT.Toolkit.AbsencesExport.Installer-${{github.ref_name}}.msi
           tag: ${{ github.ref }}
           overwrite: true
 
@@ -52,7 +52,7 @@ jobs:
           VERSION: ${{ github.ref_name }}
         run: |
           # JSON String erstellen
-          $jsonString = '{"RegistryKey":"HKUD\\Software\\\\co-IT.eu GmbH\\Clockodo QuickActions\\Version", "Version":"' + $env:VERSION + '"}'
+          $jsonString = '{"RegistryKey":"HKUD\\Software\\\\co-IT.eu GmbH\\Abwesenheit Export\\Version", "Version":"' + $env:VERSION + '"}'
           
           # Datei erstellen
           $jsonString | Set-Content -Path advinst_update.json
