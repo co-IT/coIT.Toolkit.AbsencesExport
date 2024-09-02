@@ -1,5 +1,6 @@
 using coIT.Toolkit.AbsencesExport.Migration.Clockodo;
 using coIT.Toolkit.AbsencesExport.Migration.Gdi;
+using coIT.Toolkit.AbsencesExport.Migration.TimeCard;
 
 namespace coIT.Toolkit.AbsencesExport.Migration
 {
@@ -14,8 +15,9 @@ namespace coIT.Toolkit.AbsencesExport.Migration
             //    connectionString,
             //    "clockodo-settings.json"
             //);
+            //await ClockodoEinstellungenMigration.Durchführen(connectionString);
 
-            await ClockodoEinstellungenMigration.Durchführen(connectionString);
+            await TimeCardEinstellungenMigration.Durchführen(connectionString);
         }
     }
 }
