@@ -1,22 +1,22 @@
-﻿using System.Text;
+using System.Text;
 using coIT.AbsencesExport.Configurations;
 using coIT.Libraries.Gdi.HumanResources;
+using coIT.Toolkit.AbsencesExport.Infrastructure.GdiAbsences;
 using CSharpFunctionalExtensions;
 
 namespace coIT.AbsencesExport.UserForms
 {
     public partial class GdiUserForm : UserControl, IImportAbsences<GdiAbsenceType>
     {
-        private readonly AppConfiguration _appConfig;
-
+        private readonly IGdiAbwesenheitRepository _repository;
         private HashSet<GdiAbsenceType> _absenceTypes = new();
 
         public bool LoadedCorrectly { get; private set; } = true;
         public string LoadErrorMessage { get; private set; } = string.Empty;
 
-        public static async Task<GdiUserForm> Create(AppConfiguration appConfig)
+        public static async Task<GdiUserForm> Create(IGdiAbwesenheitRepository repository)
         {
-            var gdiForm = new GdiUserForm(appConfig);
+            var gdiForm = new GdiUserForm(repository);
             gdiForm.LoadConfiguration();
             return gdiForm;
         }
@@ -26,10 +26,10 @@ namespace coIT.AbsencesExport.UserForms
             InitializeComponent();
         }
 
-        private GdiUserForm(AppConfiguration appConfig)
+        private GdiUserForm(IGdiAbwesenheitRepository repository)
             : this()
         {
-            _appConfig = appConfig;
+            _repository = repository;
         }
 
         public void ExportAbsences(
@@ -93,9 +93,9 @@ namespace coIT.AbsencesExport.UserForms
 
         private void LoadConfiguration()
         {
-            _appConfig
-                .Load<GdiConfiguration>()
-                .Tap(config => _absenceTypes = config.AbsenceTypes)
+            _repository
+                .GetAll()
+                .Tap(abwesenheitsTypen => _absenceTypes = abwesenheitsTypen)
                 .TapError(DisplayError)
                 .OnSuccessTry(_ => DisplayAbsenceTypeList());
         }

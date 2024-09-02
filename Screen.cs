@@ -3,6 +3,7 @@ using coIT.AbsencesExport.UserForms;
 using coIT.Libraries.Clockodo.Absences.Contracts;
 using coIT.Libraries.Gdi.HumanResources;
 using coIT.Libraries.TimeCard.DataContracts;
+using coIT.Toolkit.AbsencesExport.Infrastructure.GdiAbsences;
 
 namespace coIT.AbsencesExport
 {
@@ -16,7 +17,8 @@ namespace coIT.AbsencesExport
 
             var appName =
                 Assembly.GetEntryAssembly()?.GetName().Name ?? throw new NullReferenceException();
-            _appConfig = new AppConfiguration(appName);
+            var connectionString = Environment.GetEnvironmentVariable("ConnectionString");
+            _appConfig = new AppConfiguration(appName, connectionString);
         }
 
         private async void LoadMain(object sender, EventArgs e)
@@ -29,13 +31,17 @@ namespace coIT.AbsencesExport
             if (initialConfigurationNeeded)
                 StartFirstInitialization();
 
+            var gdiRepository = new GdiAbwesenheitDataTableRepository(
+                _appConfig.GetConnectionString()
+            );
+
             loadingForm.Show();
             loadingForm.TopMost = true;
             loadingForm.SetStatus("Clockodo Einstellungen Laden", 0);
-            await LoadClockodoToGdi();
+            await LoadClockodoToGdi(gdiRepository);
 
             loadingForm.SetStatus("TimeCard Einstellungen Laden", 20);
-            await LoadTimeCardToGdi();
+            await LoadTimeCardToGdi(gdiRepository);
             loadingForm.Close();
 
             Enabled = true;
@@ -60,12 +66,12 @@ namespace coIT.AbsencesExport
             }
         }
 
-        private async Task LoadClockodoToGdi()
+        private async Task LoadClockodoToGdi(IGdiAbwesenheitRepository gdiRepository)
         {
             var absenceSourceName = "Clockodo";
             var absenceTargetName = "GDI";
 
-            var gdiUserForm = await GdiUserForm.Create(_appConfig);
+            var gdiUserForm = await GdiUserForm.Create(gdiRepository);
             var targetAbsenceTypes = gdiUserForm.GetAllAbsenceTypes();
             Func<GdiAbsenceType, object> _getTargetKey = gdiAbsenceType => gdiAbsenceType.Id;
 
@@ -97,12 +103,12 @@ namespace coIT.AbsencesExport
             timeCardToGdiExport.Dock = DockStyle.Fill;
         }
 
-        private async Task LoadTimeCardToGdi()
+        private async Task LoadTimeCardToGdi(IGdiAbwesenheitRepository gdiRepository)
         {
             var absenceSourceName = "TimeCard";
             var absenceTargetName = "GDI";
 
-            var gdiUserForm = await GdiUserForm.Create(_appConfig);
+            var gdiUserForm = await GdiUserForm.Create(gdiRepository);
             var targetAbsenceTypes = gdiUserForm.GetAllAbsenceTypes();
             Func<GdiAbsenceType, object> _getTargetKey = gdiAbsenceType => gdiAbsenceType.Id;
 

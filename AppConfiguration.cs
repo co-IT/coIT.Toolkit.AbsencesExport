@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Text;
 using CSharpFunctionalExtensions;
 using Newtonsoft.Json;
@@ -9,12 +9,20 @@ namespace coIT.AbsencesExport
     {
         private readonly string _appName;
         private readonly string _configFileExtensions;
+        private readonly string _connectionString;
 
-        public AppConfiguration(string appName, string configFileExtensions = "json")
+        public AppConfiguration(
+            string appName,
+            string connectionString,
+            string configFileExtensions = "json"
+        )
         {
             _appName = appName;
             _configFileExtensions = configFileExtensions;
+            _connectionString = connectionString;
         }
+
+        public string GetConnectionString() => _connectionString;
 
         public bool IsInitialConfigurationNeeded()
         {
