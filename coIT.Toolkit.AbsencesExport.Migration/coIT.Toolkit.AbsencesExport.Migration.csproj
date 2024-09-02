@@ -16,6 +16,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="clockodo-settings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="gdi-settings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -1,0 +1,70 @@
+﻿[
+    {
+      "Id": 1,
+      "DisplayText": "Normaler Urlaubstag"
+    },
+    {
+      "Id": 2,
+      "DisplayText": "Sonderurlaub"
+    },
+    {
+      "Id": 3,
+      "DisplayText": "Überstundenabbau"
+    },
+    {
+      "Id": 4,
+      "DisplayText": "Krankheit ohne eAU"
+    },
+    {
+      "Id": 5,
+      "DisplayText": "Krankheit eines Kindes"
+    },
+    {
+      "Id": 6,
+      "DisplayText": "Schule / Weiterbildung"
+    },
+    {
+      "Id": 7,
+      "DisplayText": "Mutterschutz"
+    },
+    {
+      "Id": 8,
+      "DisplayText": "Home Office"
+    },
+    {
+      "Id": 9,
+      "DisplayText": "Arbeit außer Haus"
+    },
+    {
+      "Id": 10,
+      "DisplayText": "Sonderurlaub (unbezahlt)"
+    },
+    {
+      "Id": 11,
+      "DisplayText": "Krankheit (unbezahlt)"
+    },
+    {
+      "Id": 12,
+      "DisplayText": "Krankheit eines Kindes (unbezahlt)"
+    },
+    {
+      "Id": 13,
+      "DisplayText": "Quarantäne"
+    },
+    {
+      "Id": 14,
+      "DisplayText": "Militär-/Ersatzdienst"
+    },
+    {
+      "Id": 15,
+      "DisplayText": "Krankheit (Krankengeld)"
+    },
+    {
+      "Id": -1,
+      "DisplayText": "Krankheit mit eAU"
+    },
+    {
+      "Id": -2,
+      "DisplayText": "Krankheit eines Kindes mit eAU"
+    }
+  ]

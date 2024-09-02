@@ -1,5 +1,3 @@
-using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.GdiAbsences;
-
 namespace coIT.Toolkit.AbsencesExport.Migration
 {
     internal class Program
@@ -9,6 +7,10 @@ namespace coIT.Toolkit.AbsencesExport.Migration
             var connectionString = Environment.GetEnvironmentVariable("ConnectionString");
 
             await GdiAbwesenheitenMigration.Durchführen(connectionString, "gdi-settings.json");
+            await ClockodoAbwesenheitenMigration.Durchführen(
+                connectionString,
+                "clockodo-settings.json"
+            );
         }
     }
 }

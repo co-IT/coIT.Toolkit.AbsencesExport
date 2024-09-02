@@ -1,15 +1,15 @@
 using System.Text;
-using coIT.Libraries.Gdi.HumanResources;
-using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.GdiAbwesenheitsTypen;
+using coIT.Libraries.Clockodo.Absences.Contracts;
+using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.ClockodoAbwesenheitsTypen;
 using Newtonsoft.Json;
 
 namespace coIT.Toolkit.AbsencesExport.Migration
 {
-    internal class GdiAbwesenheitenMigration
+    internal class ClockodoAbwesenheitenMigration
     {
         public static async Task Durchführen(string connectionString, string pfadZuJson)
         {
-            var repository = new GdiAbwesenheitDataTableRepository(connectionString);
+            var repository = new ClockodoAbwesenheitsTypeDataTableRespository(connectionString);
 
             var abwesenheiten = await AbwesenheitenEinlesen(pfadZuJson);
 
@@ -21,10 +21,10 @@ namespace coIT.Toolkit.AbsencesExport.Migration
                 Console.WriteLine($"{einfügenErgebnis.Error}");
         }
 
-        public static async Task<List<GdiAbsenceType>> AbwesenheitenEinlesen(string pfadZuJson)
+        public static async Task<List<ClockodoAbsenceType>> AbwesenheitenEinlesen(string pfadZuJson)
         {
             var abwesenheitsTypenJson = await File.ReadAllTextAsync(pfadZuJson, Encoding.UTF8);
-            var abwesenheitsTypen = JsonConvert.DeserializeObject<List<GdiAbsenceType>>(
+            var abwesenheitsTypen = JsonConvert.DeserializeObject<List<ClockodoAbsenceType>>(
                 abwesenheitsTypenJson
             );
             return abwesenheitsTypen;
