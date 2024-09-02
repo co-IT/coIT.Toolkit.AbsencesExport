@@ -14,4 +14,8 @@
     <PackageReference Include="coIT.Libraries.TimeCard" Version="1.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Infrastructure\Mapping\TimeCardToGdi\" />
+  </ItemGroup>
+
 </Project>
