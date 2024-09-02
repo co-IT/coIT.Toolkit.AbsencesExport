@@ -3,9 +3,9 @@ using Azure.Data.Tables;
 using coIT.Libraries.Gdi.HumanResources;
 using CSharpFunctionalExtensions;
 
-namespace coIT.Toolkit.AbsencesExport.Infrastructure.GdiAbsences
+namespace coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.GdiAbsences
 {
-    internal class GdiAbwesenheitDataTableRepository : IGdiAbwesenheitRepository
+    public class GdiAbwesenheitDataTableRepository : IGdiAbwesenheitRepository
     {
         private readonly TableClient _tableClient;
 

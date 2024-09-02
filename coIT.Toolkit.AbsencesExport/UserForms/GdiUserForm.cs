@@ -1,7 +1,7 @@
 using System.Text;
 using coIT.AbsencesExport.Configurations;
 using coIT.Libraries.Gdi.HumanResources;
-using coIT.Toolkit.AbsencesExport.Infrastructure.GdiAbsences;
+using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.GdiAbsences;
 using CSharpFunctionalExtensions;
 
 namespace coIT.AbsencesExport.UserForms

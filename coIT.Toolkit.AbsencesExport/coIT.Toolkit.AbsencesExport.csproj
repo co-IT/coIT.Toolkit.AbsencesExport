@@ -23,6 +23,9 @@
     <PackageReference Include="Microsoft.DependencyValidation.Analyzers" Version="0.11.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\coIT.Toolkit.AbsencesExport.Infrastructure\coIT.Toolkit.AbsencesExport.Infrastructure.csproj" />
+  </ItemGroup>
+  <ItemGroup>
     <None Update="config\clockodo-mapping\clockodo-mapping-settings-Standardkonfiguration.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

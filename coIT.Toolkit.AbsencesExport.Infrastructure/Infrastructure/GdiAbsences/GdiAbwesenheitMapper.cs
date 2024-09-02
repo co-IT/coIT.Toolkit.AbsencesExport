@@ -1,6 +1,6 @@
 using coIT.Libraries.Gdi.HumanResources;
 
-namespace coIT.Toolkit.AbsencesExport.Infrastructure.GdiAbsences
+namespace coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.GdiAbsences
 {
     internal static class GdiAbwesenheitMapper
     {
