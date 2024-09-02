@@ -3,6 +3,7 @@ using coIT.AbsencesExport.UserForms;
 using coIT.Libraries.Clockodo.Absences.Contracts;
 using coIT.Libraries.Gdi.HumanResources;
 using coIT.Libraries.TimeCard.DataContracts;
+using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.ClockodoAbwesenheitsTypen;
 using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.GdiAbwesenheitsTypen;
 
 namespace coIT.AbsencesExport
@@ -34,11 +35,14 @@ namespace coIT.AbsencesExport
             var gdiRepository = new GdiAbwesenheitDataTableRepository(
                 _appConfig.GetConnectionString()
             );
+            var clockodoRepository = new ClockodoAbwesenheitsTypeDataTableRespository(
+                _appConfig.GetConnectionString()
+            );
 
             loadingForm.Show();
             loadingForm.TopMost = true;
             loadingForm.SetStatus("Clockodo Einstellungen Laden", 0);
-            await LoadClockodoToGdi(gdiRepository);
+            await LoadClockodoToGdi(gdiRepository, clockodoRepository);
 
             loadingForm.SetStatus("TimeCard Einstellungen Laden", 20);
             await LoadTimeCardToGdi(gdiRepository);
@@ -66,7 +70,10 @@ namespace coIT.AbsencesExport
             }
         }
 
-        private async Task LoadClockodoToGdi(IGdiAbwesenheitRepository gdiRepository)
+        private async Task LoadClockodoToGdi(
+            IGdiAbwesenheitRepository gdiRepository,
+            IClockodoAbwesenheitsTypRepository clockodoRepository
+        )
         {
             var absenceSourceName = "Clockodo";
             var absenceTargetName = "GDI";
@@ -75,7 +82,7 @@ namespace coIT.AbsencesExport
             var targetAbsenceTypes = gdiUserForm.GetAllAbsenceTypes();
             Func<GdiAbsenceType, object> _getTargetKey = gdiAbsenceType => gdiAbsenceType.Id;
 
-            var clockodoUserForm = await ClockodoUserForm.Create(_appConfig);
+            var clockodoUserForm = await ClockodoUserForm.Create(_appConfig, clockodoRepository);
             var sourceAbsenceTypes = clockodoUserForm.GetAllAbsenceTypes();
             Func<ClockodoAbsenceType, object> _getSourceKey = timeCardAbsence => timeCardAbsence.Id;
 

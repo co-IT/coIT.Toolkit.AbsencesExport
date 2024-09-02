@@ -17,7 +17,7 @@ namespace coIT.AbsencesExport.UserForms
         public static async Task<GdiUserForm> Create(IGdiAbwesenheitRepository repository)
         {
             var gdiForm = new GdiUserForm(repository);
-            gdiForm.LoadConfiguration();
+            await gdiForm.LoadConfiguration();
             return gdiForm;
         }
 
@@ -91,9 +91,9 @@ namespace coIT.AbsencesExport.UserForms
             }
         }
 
-        private void LoadConfiguration()
+        private async Task LoadConfiguration()
         {
-            _repository
+            await _repository
                 .GetAll()
                 .Tap(abwesenheitsTypen => _absenceTypes = abwesenheitsTypen)
                 .TapError(DisplayError)
