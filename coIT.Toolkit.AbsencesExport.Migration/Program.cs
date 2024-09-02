@@ -16,8 +16,8 @@ namespace coIT.Toolkit.AbsencesExport.Migration
             //    "clockodo-settings.json"
             //);
             //await ClockodoEinstellungenMigration.Durchführen(connectionString);
-
-            await TimeCardEinstellungenMigration.Durchführen(connectionString);
+            //await TimeCardEinstellungenMigration.Durchführen(connectionString);
+            await ClockodoMappingMigration.Durchführen(connectionString);
         }
     }
 }

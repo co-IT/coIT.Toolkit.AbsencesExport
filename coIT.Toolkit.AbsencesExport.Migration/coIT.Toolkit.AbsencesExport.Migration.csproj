@@ -19,6 +19,15 @@
     <None Update="Clockodo\clockodo-settings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Clockodo\Mappings\clockodo-mapping-settings-Krank mit eAU.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Clockodo\Mappings\clockodo-mapping-settings-Sonderurlaub.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Clockodo\Mappings\clockodo-mapping-settings-Standardkonfiguration.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Gdi\gdi-settings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
