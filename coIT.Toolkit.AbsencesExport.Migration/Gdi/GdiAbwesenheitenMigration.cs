@@ -3,7 +3,7 @@ using coIT.Libraries.Gdi.HumanResources;
 using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.GdiAbwesenheitsTypen;
 using Newtonsoft.Json;
 
-namespace coIT.Toolkit.AbsencesExport.Migration
+namespace coIT.Toolkit.AbsencesExport.Migration.Gdi
 {
     internal class GdiAbwesenheitenMigration
     {

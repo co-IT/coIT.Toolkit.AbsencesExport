@@ -5,7 +5,7 @@ namespace coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.Konfiguratio
 {
     internal class ClockodoKonfigurationEntity : ITableEntity
     {
-        internal static readonly string TabellenName = "GdiAbwesenheitsTypen";
+        internal static readonly string TabellenName = "ClockodoKonfiguration";
 
         // Globale Konfiguration für alle Nutzer
         internal static readonly string GlobalIdentifier = "global";

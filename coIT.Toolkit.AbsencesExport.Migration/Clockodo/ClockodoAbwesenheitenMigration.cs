@@ -3,7 +3,7 @@ using coIT.Libraries.Clockodo.Absences.Contracts;
 using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.ClockodoAbwesenheitsTypen;
 using Newtonsoft.Json;
 
-namespace coIT.Toolkit.AbsencesExport.Migration
+namespace coIT.Toolkit.AbsencesExport.Migration.Clockodo
 {
     internal class ClockodoAbwesenheitenMigration
     {

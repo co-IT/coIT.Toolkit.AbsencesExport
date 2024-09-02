@@ -3,12 +3,11 @@ using Azure;
 using Azure.Data.Tables;
 using coIT.Libraries.Clockodo.Absences;
 using coIT.Libraries.ConfigurationManager.Cryptography;
-using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.GdiAbwesenheitsTypen;
 using CSharpFunctionalExtensions;
 
 namespace coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.Konfiguration.ClockodoKonfiguration
 {
-    internal class ClockodoKonfigurationDataTableRepository : IClockodoKonfigurationRepository
+    public class ClockodoKonfigurationDataTableRepository : IClockodoKonfigurationRepository
     {
         private readonly ClockodoKonfigurationMapper _mapper;
         private readonly TableClient _tableClient;

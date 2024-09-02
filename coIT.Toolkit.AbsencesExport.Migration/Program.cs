@@ -1,3 +1,6 @@
+using coIT.Toolkit.AbsencesExport.Migration.Clockodo;
+using coIT.Toolkit.AbsencesExport.Migration.Gdi;
+
 namespace coIT.Toolkit.AbsencesExport.Migration
 {
     internal class Program
@@ -6,11 +9,13 @@ namespace coIT.Toolkit.AbsencesExport.Migration
         {
             var connectionString = Environment.GetEnvironmentVariable("ConnectionString");
 
-            await GdiAbwesenheitenMigration.Durchführen(connectionString, "gdi-settings.json");
-            await ClockodoAbwesenheitenMigration.Durchführen(
-                connectionString,
-                "clockodo-settings.json"
-            );
+            //await GdiAbwesenheitenMigration.Durchführen(connectionString, "gdi-settings.json");
+            //await ClockodoAbwesenheitenMigration.Durchführen(
+            //    connectionString,
+            //    "clockodo-settings.json"
+            //);
+
+            await ClockodoEinstellungenMigration.Durchführen(connectionString);
         }
     }
 }
