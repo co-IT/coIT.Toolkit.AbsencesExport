@@ -3,9 +3,9 @@ using Azure.Data.Tables;
 
 namespace coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.GdiAbsences
 {
-    internal class GdiAbwesenheitEntity : ITableEntity
+    internal class GdiAbwesenheitsTypEntity : ITableEntity
     {
-        internal static readonly string TabellenName = "GdiAbwesenheiten";
+        internal static readonly string TabellenName = "GdiAbwesenheitsTypen";
 
         public string PartitionKey
         {

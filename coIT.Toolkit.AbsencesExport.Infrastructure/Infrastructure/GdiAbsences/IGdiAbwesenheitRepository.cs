@@ -8,5 +8,9 @@ namespace coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.GdiAbsences
         public Task<Result<HashSet<GdiAbsenceType>>> GetAll(
             CancellationToken cancellationToken = default
         );
+        Task<Result> UpsertManyAsync(
+            List<GdiAbsenceType> gdiAbwesenheitsTypen,
+            CancellationToken cancellationToken = default
+        );
     }
 }

@@ -1,3 +1,5 @@
+launchSettings.json
+
 # Keine Temporären Advanced Installer Dateien committen
 *.Installer-cache/
 

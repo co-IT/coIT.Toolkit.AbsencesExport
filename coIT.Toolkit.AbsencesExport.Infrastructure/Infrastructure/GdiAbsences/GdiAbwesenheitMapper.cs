@@ -4,7 +4,7 @@ namespace coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.GdiAbsences
 {
     internal static class GdiAbwesenheitMapper
     {
-        public static GdiAbsenceType ZuGdiAbwesenheit(GdiAbwesenheitEntity abwesenheitDto)
+        public static GdiAbsenceType ZuGdiAbwesenheit(GdiAbwesenheitsTypEntity abwesenheitDto)
         {
             return new GdiAbsenceType
             {
@@ -12,6 +12,18 @@ namespace coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.GdiAbsences
                 DisplayText = abwesenheitDto.DisplayText,
                 IsSickness = abwesenheitDto.IsSickness,
                 IsHoliday = abwesenheitDto.IsHoliday,
+            };
+        }
+
+        public static GdiAbwesenheitsTypEntity ZuAbwesenheitEntity(GdiAbsenceType abwesenheitsTyp)
+        {
+            return new GdiAbwesenheitsTypEntity
+            {
+                RowKey = abwesenheitsTyp.Id.ToString(),
+                Id = abwesenheitsTyp.Id,
+                DisplayText = abwesenheitsTyp.DisplayText,
+                IsSickness = abwesenheitsTyp.IsSickness,
+                IsHoliday = abwesenheitsTyp.IsHoliday,
             };
         }
     }

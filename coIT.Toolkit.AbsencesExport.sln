@@ -5,7 +5,9 @@ VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "coIT.Toolkit.AbsencesExport", "coIT.Toolkit.AbsencesExport\coIT.Toolkit.AbsencesExport.csproj", "{7DE062E4-5A67-4ED7-8785-46E31596FD7D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "coIT.Toolkit.AbsencesExport.Infrastructure", "coIT.Toolkit.AbsencesExport.Infrastructure\coIT.Toolkit.AbsencesExport.Infrastructure.csproj", "{E90C5AEE-7132-41D3-AC57-1D654544F46F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "coIT.Toolkit.AbsencesExport.Infrastructure", "coIT.Toolkit.AbsencesExport.Infrastructure\coIT.Toolkit.AbsencesExport.Infrastructure.csproj", "{E90C5AEE-7132-41D3-AC57-1D654544F46F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "coIT.Toolkit.AbsencesExport.Migration", "coIT.Toolkit.AbsencesExport.Migration\coIT.Toolkit.AbsencesExport.Migration.csproj", "{FD2ED82D-B4B3-4B92-8880-269531F622FC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{E90C5AEE-7132-41D3-AC57-1D654544F46F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E90C5AEE-7132-41D3-AC57-1D654544F46F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E90C5AEE-7132-41D3-AC57-1D654544F46F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD2ED82D-B4B3-4B92-8880-269531F622FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD2ED82D-B4B3-4B92-8880-269531F622FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD2ED82D-B4B3-4B92-8880-269531F622FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD2ED82D-B4B3-4B92-8880-269531F622FC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

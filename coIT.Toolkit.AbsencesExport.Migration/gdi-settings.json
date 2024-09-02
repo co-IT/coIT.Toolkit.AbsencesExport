@@ -1,0 +1,32 @@
+    [
+        {
+            "Id": 44,
+            "DisplayText": "Kind Krank",
+            "IsSickness": false,
+            "IsHoliday": true
+        },
+        {
+            "Id": 23,
+            "DisplayText": "Erholungsurlaub",
+            "IsSickness": false,
+            "IsHoliday": true
+        },
+        {
+            "Id": 24,
+            "DisplayText": "Sonderurlaub",
+            "IsSickness": false,
+            "IsHoliday": true
+        },
+        {
+            "Id": 8,
+            "DisplayText": "Lohnfortzahlung mit AU Bescheinigung (mit AAG) krank",
+            "IsSickness": true,
+            "IsHoliday": false
+        },
+        {
+            "Id": 9,
+            "DisplayText": "Lohnfortzahlung ohne AU Bescheinigung (mit AAG) krank",
+            "IsSickness": true,
+            "IsHoliday": false
+        }
+    ]
