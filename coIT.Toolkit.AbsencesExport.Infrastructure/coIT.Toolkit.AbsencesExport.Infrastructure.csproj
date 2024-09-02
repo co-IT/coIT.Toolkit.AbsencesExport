@@ -11,4 +11,8 @@
     <PackageReference Include="coIT.Libraries.Gdi" Version="1.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Infrastructure\NewFolder\" />
+  </ItemGroup>
+
 </Project>

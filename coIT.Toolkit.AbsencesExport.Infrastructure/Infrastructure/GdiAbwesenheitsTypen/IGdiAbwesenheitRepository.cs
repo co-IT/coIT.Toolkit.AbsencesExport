@@ -1,7 +1,7 @@
 using coIT.Libraries.Gdi.HumanResources;
 using CSharpFunctionalExtensions;
 
-namespace coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.GdiAbsences
+namespace coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.GdiAbwesenheitsTypen
 {
     public interface IGdiAbwesenheitRepository
     {

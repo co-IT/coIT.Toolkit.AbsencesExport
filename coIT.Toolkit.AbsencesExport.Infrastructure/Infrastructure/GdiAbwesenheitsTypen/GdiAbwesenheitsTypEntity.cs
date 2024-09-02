@@ -1,7 +1,7 @@
 using Azure;
 using Azure.Data.Tables;
 
-namespace coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.GdiAbsences
+namespace coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.GdiAbwesenheitsTypen
 {
     internal class GdiAbwesenheitsTypEntity : ITableEntity
     {

@@ -3,7 +3,7 @@ using coIT.AbsencesExport.UserForms;
 using coIT.Libraries.Clockodo.Absences.Contracts;
 using coIT.Libraries.Gdi.HumanResources;
 using coIT.Libraries.TimeCard.DataContracts;
-using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.GdiAbsences;
+using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.GdiAbwesenheitsTypen;
 
 namespace coIT.AbsencesExport
 {
