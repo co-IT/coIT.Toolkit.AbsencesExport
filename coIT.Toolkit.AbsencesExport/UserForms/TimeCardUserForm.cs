@@ -1,14 +1,15 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using coIT.AbsencesExport.Configurations;
 using coIT.Libraries.TimeCard;
 using coIT.Libraries.TimeCard.DataContracts;
+using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.Konfiguration.ClockodoKonfiguration;
 using CSharpFunctionalExtensions;
 
 namespace coIT.AbsencesExport.UserForms;
 
 public partial class TimeCardUserForm : UserControl, IExportAbsences<TimeCardAbsenceType>
 {
-    private readonly AppConfiguration _appConfig;
+    private readonly ITimeCardKonfigurationRepository _timeCardKonfigurationRepository;
     private TimeCardService _timeCardService;
 
     private TimeCardUserForm()
@@ -16,34 +17,33 @@ public partial class TimeCardUserForm : UserControl, IExportAbsences<TimeCardAbs
         InitializeComponent();
     }
 
-    private TimeCardUserForm(AppConfiguration appConfig)
+    private TimeCardUserForm(ITimeCardKonfigurationRepository timeCardKonfigurationRepository)
         : this()
     {
-        _appConfig = appConfig;
+        _timeCardKonfigurationRepository = timeCardKonfigurationRepository;
     }
 
     public bool LoadedCorrectly { get; private set; } = true;
     public string LoadErrorMessage { get; private set; } = string.Empty;
     private HashSet<TimeCardAbsenceType> _absenceTypes = new();
 
-    private int NoExportGroup
+    private async Task<int> GetNoExportGroup()
     {
-        get
-        {
-            var config = _appConfig.Load<TimeCardConfiguration>();
-            if (config.IsFailure)
-                return -1;
+        var config = await _timeCardKonfigurationRepository.Get();
+        if (config.IsFailure)
+            return -1;
 
-            return config.Value.Settings.NoExportGroup;
-        }
+        return config.Value.NoExportGroup;
     }
 
     private IImmutableList<TimeCardEmployeesWithGroups> _employees =
         new List<TimeCardEmployeesWithGroups>().ToImmutableList();
 
-    public static async Task<TimeCardUserForm> Create(AppConfiguration appConfig)
+    public static async Task<TimeCardUserForm> Create(
+        ITimeCardKonfigurationRepository timeCardKonfigurationRepository
+    )
     {
-        var userForm = new TimeCardUserForm(appConfig);
+        var userForm = new TimeCardUserForm(timeCardKonfigurationRepository);
 
         await userForm.LoadConfiguration();
         userForm.UpdateDisplay();
@@ -193,10 +193,10 @@ public partial class TimeCardUserForm : UserControl, IExportAbsences<TimeCardAbs
         IImmutableList<TimeCardEmployeesWithGroups> employees = null;
         ImmutableHashSet<TimeCardAbsenceType> absenceTypes = null;
 
-        await _appConfig
-            .Load<TimeCardConfiguration>()
+        await _timeCardKonfigurationRepository
+            .Get()
             .MapTry(
-                async config => service = await StartTimeCardService(config.Settings),
+                async config => service = await StartTimeCardService(config),
                 ex => "Verbindung zu TimeCard konnte nicht hergestellt werden"
             )
             .MapTry(
@@ -226,16 +226,16 @@ public partial class TimeCardUserForm : UserControl, IExportAbsences<TimeCardAbs
         LoadedCorrectly = false;
     }
 
-    private void DisplayConfiguration()
+    private async Task DisplayConfiguration()
     {
-        var config = _appConfig.Load<TimeCardConfiguration>();
+        var config = await _timeCardKonfigurationRepository.Get();
         if (config.IsFailure)
             return;
 
-        tbxApiAddress.Text = config.Value.Settings.WebAddress;
-        tbxApiUser.Text = config.Value.Settings.Username;
-        tbxApiSchluessel.Text = config.Value.Settings.Password;
-        nbxKeinExportGruppenId.Value = config.Value.Settings.NoExportGroup;
+        tbxApiAddress.Text = config.Value.WebAddress;
+        tbxApiUser.Text = config.Value.Username;
+        tbxApiSchluessel.Text = config.Value.Password;
+        nbxKeinExportGruppenId.Value = config.Value.NoExportGroup;
     }
 
     private void DisplayAbsenceTypeList()
@@ -261,7 +261,18 @@ public partial class TimeCardUserForm : UserControl, IExportAbsences<TimeCardAbs
             (int)nbxKeinExportGruppenId.Value
         );
 
-        _appConfig.Save(new List<object> { config });
+        _timeCardKonfigurationRepository
+            .Upsert(config)
+            .Match(
+                () => MessageBox.Show("Erfolgreich gespeichert"),
+                fehler =>
+                    MessageBox.Show(
+                        fehler,
+                        "Fehler beim Speichern",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error
+                    )
+            );
     }
 
     private async void btnLoadConfiguration_Click(object sender, EventArgs e)

@@ -51,6 +51,10 @@ namespace coIT.AbsencesExport
                 _appConfig.GetConnectionString(),
                 encryptionService
             );
+            var timeCardSettingsRepository = new TimeCardKonfigurationDataTableRepository(
+                _appConfig.GetConnectionString(),
+                encryptionService
+            );
 
             loadingForm.Show();
             loadingForm.TopMost = true;
@@ -62,7 +66,7 @@ namespace coIT.AbsencesExport
             );
 
             loadingForm.SetStatus("TimeCard Einstellungen Laden", 20);
-            await LoadTimeCardToGdi(gdiRepository);
+            await LoadTimeCardToGdi(gdiRepository, timeCardSettingsRepository);
             loadingForm.Close();
 
             Enabled = true;
@@ -79,10 +83,9 @@ namespace coIT.AbsencesExport
                     throw new NotImplementedException();
                 }
 
-                var timecardConfig = initializeConfigurationForm.TimeCardConfiguration!;
                 var gdiConfig = initializeConfigurationForm.GdiConfiguration!;
 
-                _appConfig.Save(new List<object> { timecardConfig, gdiConfig });
+                _appConfig.Save(new List<object> { gdiConfig });
             }
         }
 
@@ -130,7 +133,10 @@ namespace coIT.AbsencesExport
             timeCardToGdiExport.Dock = DockStyle.Fill;
         }
 
-        private async Task LoadTimeCardToGdi(IGdiAbwesenheitRepository gdiRepository)
+        private async Task LoadTimeCardToGdi(
+            IGdiAbwesenheitRepository gdiRepository,
+            ITimeCardKonfigurationRepository timeCardRepository
+        )
         {
             var absenceSourceName = "TimeCard";
             var absenceTargetName = "GDI";
@@ -139,7 +145,7 @@ namespace coIT.AbsencesExport
             var targetAbsenceTypes = gdiUserForm.GetAllAbsenceTypes();
             Func<GdiAbsenceType, object> _getTargetKey = gdiAbsenceType => gdiAbsenceType.Id;
 
-            var timeCardUserForm = await TimeCardUserForm.Create(_appConfig);
+            var timeCardUserForm = await TimeCardUserForm.Create(timeCardRepository);
             var sourceAbsenceTypes = timeCardUserForm.GetAllAbsenceTypes();
             Func<TimeCardAbsenceType, object> _getSourceKey = timeCardAbsence => timeCardAbsence.Id;
 

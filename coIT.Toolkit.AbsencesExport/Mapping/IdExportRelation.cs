@@ -1,4 +1,4 @@
-﻿namespace coIT.AbsencesExport.Mapping
+namespace coIT.AbsencesExport.Mapping
 {
     internal class IdExportRelation : IEquatable<IdExportRelation>
     {

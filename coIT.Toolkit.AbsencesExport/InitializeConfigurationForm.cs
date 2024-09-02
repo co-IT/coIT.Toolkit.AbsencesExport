@@ -1,14 +1,10 @@
 using coIT.AbsencesExport.Configurations;
-using coIT.Libraries.Clockodo.Absences;
-using coIT.Libraries.Clockodo.Absences.Contracts;
 using coIT.Libraries.Gdi.HumanResources;
-using coIT.Libraries.TimeCard;
 
 namespace coIT.AbsencesExport
 {
     public partial class InitializeConfigurationForm : Form
     {
-        public TimeCardConfiguration? TimeCardConfiguration { get; private set; }
         public GdiConfiguration? GdiConfiguration { get; private set; }
 
         public InitializeConfigurationForm()
@@ -18,16 +14,6 @@ namespace coIT.AbsencesExport
 
         private void btnCreateConfig_Click(object sender, EventArgs e)
         {
-            TimeCardConfiguration = new TimeCardConfiguration
-            {
-                Settings = new TimeCardSettings(
-                    timecard_ApiAdresse.Text,
-                    timecard_ApiUser.Text,
-                    timecard_ApiSchluessel.Text,
-                    Convert.ToInt32(timecard_ApiKeinExportGroup.Text)
-                ),
-            };
-
             var gdiAbsenceTypes = new List<GdiAbsenceType>()
             {
                 new GdiAbsenceType
