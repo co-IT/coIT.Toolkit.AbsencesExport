@@ -3,6 +3,7 @@ using coIT.AbsencesExport.Configurations;
 using coIT.Libraries.Clockodo.Absences;
 using coIT.Libraries.Clockodo.Absences.Contracts;
 using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.ClockodoAbwesenheitsTypen;
+using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.Konfiguration.ClockodoKonfiguration;
 using CSharpFunctionalExtensions;
 
 namespace coIT.AbsencesExport.UserForms;
@@ -13,17 +14,17 @@ public partial class ClockodoUserForm : UserControl, IExportAbsences<ClockodoAbs
     private AbsencesService _clockodoService;
     private IImmutableList<EmployeeInfo> _employeeInfos;
 
-    private readonly AppConfiguration _appConfig;
+    private readonly IClockodoKonfigurationRepository _clockodoConfiguration;
     private readonly IClockodoAbwesenheitsTypRepository _abwesenheitsTypRepository;
 
     public static async Task<ClockodoUserForm> Create(
-        AppConfiguration appConfig,
+        IClockodoKonfigurationRepository clockodoConfiguration,
         IClockodoAbwesenheitsTypRepository abwesenheitsTypRepository
     )
     {
-        var userForm = new ClockodoUserForm(appConfig, abwesenheitsTypRepository);
+        var userForm = new ClockodoUserForm(clockodoConfiguration, abwesenheitsTypRepository);
         await userForm.LoadConfiguration();
-        userForm.UpdateDisplay();
+        await userForm.UpdateDisplay();
         return userForm;
     }
 
@@ -33,12 +34,12 @@ public partial class ClockodoUserForm : UserControl, IExportAbsences<ClockodoAbs
     }
 
     private ClockodoUserForm(
-        AppConfiguration appConfig,
+        IClockodoKonfigurationRepository clockodoConfiguration,
         IClockodoAbwesenheitsTypRepository abwesenheitsTypRepository
     )
         : this()
     {
-        _appConfig = appConfig;
+        _clockodoConfiguration = clockodoConfiguration;
         _abwesenheitsTypRepository = abwesenheitsTypRepository;
     }
 
@@ -92,10 +93,9 @@ public partial class ClockodoUserForm : UserControl, IExportAbsences<ClockodoAbs
         await _abwesenheitsTypRepository
             .GetAll()
             .Tap(abwesenheitsTypen => _absenceTypes = abwesenheitsTypen)
-            .Bind(_ => _appConfig.Load<ClockodoConfiguration>())
+            .BindZip(typen => _clockodoConfiguration.Get())
             .MapTry(
-                async config =>
-                    service = new AbsencesService(config.Settings, config.AbsenceTypes.ToList()),
+                config => service = new AbsencesService(config.Second, config.First.ToList()),
                 ex => "Verbindung zu TimeCard konnte nicht hergestellt werden"
             )
             .MapTry(
@@ -108,20 +108,20 @@ public partial class ClockodoUserForm : UserControl, IExportAbsences<ClockodoAbs
         _employeeInfos = employees;
     }
 
-    private void UpdateDisplay()
+    private async Task UpdateDisplay()
     {
-        DisplayConfiguration();
+        await DisplayConfiguration();
         DisplayAbsenceTypeList();
     }
 
-    private void DisplayConfiguration()
+    private async Task DisplayConfiguration()
     {
-        var config = _appConfig.Load<ClockodoConfiguration>();
+        var config = await _clockodoConfiguration.Get();
         if (config.IsFailure)
             return;
 
-        tbxApiUser.Text = config.Value.Settings?.EmailAddress ?? string.Empty;
-        tbxApiSchluessel.Text = config.Value.Settings?.ApiToken ?? string.Empty;
+        tbxApiUser.Text = config.Value.EmailAddress ?? string.Empty;
+        tbxApiSchluessel.Text = config.Value.ApiToken ?? string.Empty;
     }
 
     private void DisplayAbsenceTypeList()

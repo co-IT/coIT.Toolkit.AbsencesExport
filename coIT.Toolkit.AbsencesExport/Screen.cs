@@ -1,10 +1,12 @@
 using System.Reflection;
 using coIT.AbsencesExport.UserForms;
 using coIT.Libraries.Clockodo.Absences.Contracts;
+using coIT.Libraries.ConfigurationManager.Cryptography;
 using coIT.Libraries.Gdi.HumanResources;
 using coIT.Libraries.TimeCard.DataContracts;
 using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.ClockodoAbwesenheitsTypen;
 using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.GdiAbwesenheitsTypen;
+using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.Konfiguration.ClockodoKonfiguration;
 
 namespace coIT.AbsencesExport
 {
@@ -27,22 +29,37 @@ namespace coIT.AbsencesExport
             var loadingForm = new LoadingForm();
             Enabled = false;
 
+            // TODO: Man braucht nur connection string
             var initialConfigurationNeeded = _appConfig.IsInitialConfigurationNeeded();
 
             if (initialConfigurationNeeded)
                 StartFirstInitialization();
 
+            var encryptionService = AesCryptographyService
+                .FromKey(
+                    "eyJJdGVtMSI6InlLdHdrUDJraEJRbTRTckpEaXFjQWpkM3pBc3NVdG8rSUNrTmFwYUgwbWs9IiwiSXRlbTIiOiJUblRxT1RUbXI3ajBCZlUwTEtnOS9BPT0ifQ=="
+                )
+                .Value;
+
             var gdiRepository = new GdiAbwesenheitDataTableRepository(
                 _appConfig.GetConnectionString()
             );
-            var clockodoRepository = new ClockodoAbwesenheitsTypeDataTableRespository(
+            var clockodoAbsenceTypesRepository = new ClockodoAbwesenheitsTypeDataTableRespository(
                 _appConfig.GetConnectionString()
+            );
+            var clockodoSettingsRepository = new ClockodoKonfigurationDataTableRepository(
+                _appConfig.GetConnectionString(),
+                encryptionService
             );
 
             loadingForm.Show();
             loadingForm.TopMost = true;
             loadingForm.SetStatus("Clockodo Einstellungen Laden", 0);
-            await LoadClockodoToGdi(gdiRepository, clockodoRepository);
+            await LoadClockodoToGdi(
+                gdiRepository,
+                clockodoAbsenceTypesRepository,
+                clockodoSettingsRepository
+            );
 
             loadingForm.SetStatus("TimeCard Einstellungen Laden", 20);
             await LoadTimeCardToGdi(gdiRepository);
@@ -63,16 +80,16 @@ namespace coIT.AbsencesExport
                 }
 
                 var timecardConfig = initializeConfigurationForm.TimeCardConfiguration!;
-                var clockodoConfig = initializeConfigurationForm.ClockodoConfiguration!;
                 var gdiConfig = initializeConfigurationForm.GdiConfiguration!;
 
-                _appConfig.Save(new List<object> { timecardConfig, clockodoConfig, gdiConfig });
+                _appConfig.Save(new List<object> { timecardConfig, gdiConfig });
             }
         }
 
         private async Task LoadClockodoToGdi(
             IGdiAbwesenheitRepository gdiRepository,
-            IClockodoAbwesenheitsTypRepository clockodoRepository
+            IClockodoAbwesenheitsTypRepository clockodoAbsenceTypeRepository,
+            IClockodoKonfigurationRepository clockodoKonfigurationRepository
         )
         {
             var absenceSourceName = "Clockodo";
@@ -82,7 +99,10 @@ namespace coIT.AbsencesExport
             var targetAbsenceTypes = gdiUserForm.GetAllAbsenceTypes();
             Func<GdiAbsenceType, object> _getTargetKey = gdiAbsenceType => gdiAbsenceType.Id;
 
-            var clockodoUserForm = await ClockodoUserForm.Create(_appConfig, clockodoRepository);
+            var clockodoUserForm = await ClockodoUserForm.Create(
+                clockodoKonfigurationRepository,
+                clockodoAbsenceTypeRepository
+            );
             var sourceAbsenceTypes = clockodoUserForm.GetAllAbsenceTypes();
             Func<ClockodoAbsenceType, object> _getSourceKey = timeCardAbsence => timeCardAbsence.Id;
 
