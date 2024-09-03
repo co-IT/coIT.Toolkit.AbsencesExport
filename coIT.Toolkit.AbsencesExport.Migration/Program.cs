@@ -17,7 +17,8 @@ namespace coIT.Toolkit.AbsencesExport.Migration
             //);
             //await ClockodoEinstellungenMigration.Durchführen(connectionString);
             //await TimeCardEinstellungenMigration.Durchführen(connectionString);
-            await ClockodoMappingMigration.Durchführen(connectionString);
+            //await ClockodoMappingMigration.Durchführen(connectionString);
+            await TimeCardMappingMigration.Durchführen(connectionString);
         }
     }
 }
