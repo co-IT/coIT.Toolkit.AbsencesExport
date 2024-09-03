@@ -1,6 +1,7 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using System.Text;
 using coIT.AbsencesExport.Mapping;
+using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.Mapping;
 using CSharpFunctionalExtensions;
 using Newtonsoft.Json;
 
@@ -10,28 +11,18 @@ public partial class MappingUserForm<TSource, TTarget> : UserControl
     where TSource : class, IEquatable<TSource>, IEquatable<int>, IComparable<TSource>
     where TTarget : class, IEquatable<TTarget>, IEquatable<int>, IComparable<TTarget>
 {
-    private string _configurationPointerFile =>
-        Path.Combine(
-            Directory.GetCurrentDirectory(),
-            "config",
-            $"{_savePathStart}-mapping-pointer.json"
-        );
+    private readonly IExportRelationsRepository _exportRelationRepository;
 
-    private ConfigurationFilesInfo _configurationFilesInfo;
-
-    private string? _configurationPath;
-    private string _savePathStart;
     private readonly Func<TSource, object> _getSourceKey;
     private readonly Func<TTarget, object> _getTargetKey;
 
     private AbsenceTypeRelations<TSource, TTarget> _relations;
-
     private readonly HashSet<TSource> _sourceTypes;
 
     private readonly HashSet<TTarget> _targetTypes;
 
     public MappingUserForm(
-        string savePathStart,
+        IExportRelationsRepository exportRelationRepository,
         HashSet<TSource> sourceTypes,
         Func<TSource, object> getSourceKey,
         string sourceName,
@@ -42,7 +33,7 @@ public partial class MappingUserForm<TSource, TTarget> : UserControl
     {
         InitializeComponent();
 
-        _savePathStart = savePathStart;
+        _exportRelationRepository = exportRelationRepository;
         _sourceTypes = sourceTypes;
         _getSourceKey = getSourceKey;
 
@@ -100,7 +91,7 @@ public partial class MappingUserForm<TSource, TTarget> : UserControl
     }
 
     public static async Task<MappingUserForm<TSource, TTarget>> Create(
-        string pathAddon,
+        IExportRelationsRepository exportRelationsRepository,
         HashSet<TSource> sourceTypes,
         Func<TSource, object> getSourceKey,
         string sourceName,
@@ -110,7 +101,7 @@ public partial class MappingUserForm<TSource, TTarget> : UserControl
     )
     {
         var form = new MappingUserForm<TSource, TTarget>(
-            pathAddon,
+            exportRelationsRepository,
             sourceTypes,
             getSourceKey,
             sourceName,
@@ -137,38 +128,63 @@ public partial class MappingUserForm<TSource, TTarget> : UserControl
 
     private async Task LoadMappingFileList()
     {
-        await LoadJsonFile<ConfigurationFilesInfo>(_configurationPointerFile)
-            .Tap(configurationFileInfoList => _configurationFilesInfo = configurationFileInfoList)
-            .Tap(_ => UpdateConfigurationFileList())
-            .Tap(configurationFileInfoList =>
-                SelectMappingFile(configurationFileInfoList.Files.First())
-            )
+        await UpdateConfigurationFileList()
+            .Tap(configurations => SelectMappingFile(configurations.First()))
             .TapError(DisplayError);
     }
 
-    private async Task SelectMappingFile(ConfigurationFileInfo mappingFileInfo)
+    private async Task SelectMappingFile(ExportRelations mapping)
     {
-        var fileInfo = new FileInfo(mappingFileInfo.Path);
-        var repository = new IdExportRelations(fileInfo);
         _relations = await AbsenceTypeRelations<TSource, TTarget>.Initialize(
             _sourceTypes,
             _getSourceKey,
             _targetTypes,
             _getTargetKey,
-            repository
+            mapping
         );
 
-        cbxConfigurationFiles.SelectedItem = mappingFileInfo;
-        _configurationPath = mappingFileInfo.Path;
+        cbxConfigurationFiles.SelectedItem = mapping;
 
         if (IsHandleCreated)
             lblUnsavedChanges.BeginInvoke(() => lblUnsavedChanges.Visible = false);
     }
 
-    private void UpdateConfigurationFileList()
+    private async Task<Result<List<ExportRelations>>> UpdateConfigurationFileList()
     {
-        cbxConfigurationFiles.Items.Clear();
-        cbxConfigurationFiles.Items.AddRange(_configurationFilesInfo.Files.ToArray());
+        var configurations = await _exportRelationRepository.GetAll();
+
+        if (configurations.IsFailure)
+        {
+            MessageBox.Show(
+                $"Mapping Konfiguration konnten nicht geladen werden, da '{configurations.Error}'.",
+                "Fehler",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error
+            );
+        }
+        else
+        {
+            UpdateConfigurationFiles(configurations.Value);
+        }
+
+        return configurations;
+    }
+
+    private void UpdateConfigurationFiles(List<ExportRelations> configurations)
+    {
+        if (cbxConfigurationFiles.InvokeRequired)
+        {
+            cbxConfigurationFiles.Invoke(
+                new Action(() => UpdateConfigurationFiles(configurations))
+            );
+        }
+        else
+        {
+            var currentItem = cbxConfigurationFiles.SelectedIndex;
+            cbxConfigurationFiles.Items.Clear();
+            cbxConfigurationFiles.Items.AddRange(configurations.ToArray());
+            cbxConfigurationFiles.SelectedIndex = currentItem;
+        }
     }
 
     private void UpdateListBoxes()
@@ -303,24 +319,13 @@ public partial class MappingUserForm<TSource, TTarget> : UserControl
         return listBox.SelectedItem is null ? Maybe<T>.None : Maybe.From((T)listBox.SelectedItem);
     }
 
-    private async Task<Result<T?>> LoadJsonFile<T>(string file)
-    {
-        return await Result
-            .SuccessIf(File.Exists(file), $"Datei '{file}' konnte nicht gefunden werden.")
-            .MapTry(() => File.ReadAllTextAsync(file, Encoding.UTF8))
-            .MapTry(
-                content => JsonConvert.DeserializeObject<T>(content),
-                ex => $"Datei '{file}' ist ungültig: " + ex.Message
-            )
-            .Ensure(setting => setting is not null, $"Datei '{file}' war leer.");
-    }
-
     private async void btnStoreConfig_Click(object sender, EventArgs e)
     {
-        var serializedPointerFile = JsonConvert.SerializeObject(_configurationFilesInfo);
-        File.WriteAllText(_configurationPointerFile, serializedPointerFile, Encoding.UTF8);
-
-        await _relations.Save();
+        var configuration = _relations.GetConfigurationSettings();
+        await _exportRelationRepository
+            .Save(configuration)
+            .Tap(UpdateConfigurationFileList)
+            .TapError(DisplayError);
 
         lblUnsavedChanges.Visible = false;
     }
@@ -356,7 +361,7 @@ public partial class MappingUserForm<TSource, TTarget> : UserControl
         }
     }
 
-    private void btnNewConfig_Click(object sender, EventArgs e)
+    private async void btnNewConfig_Click(object sender, EventArgs e)
     {
         var textInputeForm = new TextInputForm(
             "Neue Konfiguration erstellen",
@@ -366,23 +371,22 @@ public partial class MappingUserForm<TSource, TTarget> : UserControl
         textInputeForm.ShowDialog();
         var input = textInputeForm.UserInput;
 
-        var newConfigurationFileInfo = new ConfigurationFileInfo
+        var relations = new ExportRelations
         {
-            Path = Path.Combine(
-                _configurationFilesInfo.BasePath,
-                $"clockodo-mapping-settings-{input}.json"
-            ),
-            Name = input
+            DisplayName = input,
+            Id = Guid.NewGuid().ToString(),
+            Relations = new(),
         };
 
-        _configurationFilesInfo.Files.Add(newConfigurationFileInfo);
-        UpdateConfigurationFileList();
-        SelectMappingFile(newConfigurationFileInfo);
+        await _exportRelationRepository.Save(relations);
+
+        await UpdateConfigurationFileList();
+        await SelectMappingFile(relations);
     }
 
     private async void cbxConfigurationFiles_SelectedValueChanged(object sender, EventArgs e)
     {
-        var selectedConfig = (ConfigurationFileInfo)cbxConfigurationFiles.SelectedItem;
+        var selectedConfig = (ExportRelations)cbxConfigurationFiles.SelectedItem;
         await SelectMappingFile(selectedConfig);
         UpdateListBoxes();
     }

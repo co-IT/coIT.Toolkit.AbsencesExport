@@ -7,6 +7,9 @@ using coIT.Libraries.TimeCard.DataContracts;
 using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.ClockodoAbwesenheitsTypen;
 using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.GdiAbwesenheitsTypen;
 using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.Konfiguration.ClockodoKonfiguration;
+using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.Mapping;
+using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.Mapping.ClockodoToGdi;
+using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.Mapping.TimeCardToGdi;
 
 namespace coIT.AbsencesExport
 {
@@ -51,9 +54,15 @@ namespace coIT.AbsencesExport
                 _appConfig.GetConnectionString(),
                 encryptionService
             );
+            var clockodoExportRelationsRepository = new ClockodoExportRelationsRepository(
+                _appConfig.GetConnectionString()
+            );
             var timeCardSettingsRepository = new TimeCardKonfigurationDataTableRepository(
                 _appConfig.GetConnectionString(),
                 encryptionService
+            );
+            var timeCardExportRelationsRepository = new TimeCardExportRelationsRepository(
+                _appConfig.GetConnectionString()
             );
 
             loadingForm.Show();
@@ -62,11 +71,16 @@ namespace coIT.AbsencesExport
             await LoadClockodoToGdi(
                 gdiRepository,
                 clockodoAbsenceTypesRepository,
-                clockodoSettingsRepository
+                clockodoSettingsRepository,
+                clockodoExportRelationsRepository
             );
 
             loadingForm.SetStatus("TimeCard Einstellungen Laden", 20);
-            await LoadTimeCardToGdi(gdiRepository, timeCardSettingsRepository);
+            await LoadTimeCardToGdi(
+                gdiRepository,
+                timeCardSettingsRepository,
+                timeCardExportRelationsRepository
+            );
             loadingForm.Close();
 
             Enabled = true;
@@ -92,7 +106,8 @@ namespace coIT.AbsencesExport
         private async Task LoadClockodoToGdi(
             IGdiAbwesenheitRepository gdiRepository,
             IClockodoAbwesenheitsTypRepository clockodoAbsenceTypeRepository,
-            IClockodoKonfigurationRepository clockodoKonfigurationRepository
+            IClockodoKonfigurationRepository clockodoKonfigurationRepository,
+            IExportRelationsRepository exportRelationsRepository
         )
         {
             var absenceSourceName = "Clockodo";
@@ -110,7 +125,7 @@ namespace coIT.AbsencesExport
             Func<ClockodoAbsenceType, object> _getSourceKey = timeCardAbsence => timeCardAbsence.Id;
 
             var mappingUserForm = await MappingUserForm<ClockodoAbsenceType, GdiAbsenceType>.Create(
-                "clockodo",
+                exportRelationsRepository,
                 sourceAbsenceTypes,
                 _getSourceKey,
                 absenceSourceName,
@@ -135,7 +150,8 @@ namespace coIT.AbsencesExport
 
         private async Task LoadTimeCardToGdi(
             IGdiAbwesenheitRepository gdiRepository,
-            ITimeCardKonfigurationRepository timeCardRepository
+            ITimeCardKonfigurationRepository timeCardRepository,
+            IExportRelationsRepository exportRelationsRepository
         )
         {
             var absenceSourceName = "TimeCard";
@@ -150,7 +166,7 @@ namespace coIT.AbsencesExport
             Func<TimeCardAbsenceType, object> _getSourceKey = timeCardAbsence => timeCardAbsence.Id;
 
             var mappingUserForm = await MappingUserForm<TimeCardAbsenceType, GdiAbsenceType>.Create(
-                "timecard",
+                exportRelationsRepository,
                 sourceAbsenceTypes,
                 _getSourceKey,
                 absenceSourceName,

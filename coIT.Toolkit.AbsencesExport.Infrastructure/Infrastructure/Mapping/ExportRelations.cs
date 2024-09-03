@@ -9,5 +9,7 @@ namespace coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.Mapping
         public string Id { get; set; }
         public DateTimeOffset? Timestamp { get; set; }
         public ETag ETag { get; set; }
+
+        public override string ToString() => DisplayName;
     }
 }

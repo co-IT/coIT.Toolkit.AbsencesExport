@@ -1,10 +1,12 @@
-﻿namespace coIT.AbsencesExport.Mapping
+using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.Mapping;
+
+namespace coIT.AbsencesExport.Mapping
 {
     internal class AbsenceTypeRelations<TSource, TTarget>
         where TSource : class, IEquatable<TSource>, IEquatable<int>, IComparable<TSource>
         where TTarget : class, IEquatable<TTarget>, IEquatable<int>, IComparable<TTarget>
     {
-        private readonly IdExportRelations _repository;
+        private readonly ExportRelations _configuration;
         private readonly HashSet<TSource> _sourceAbsenceTypes;
         private readonly Func<TSource, object> _getSourceKey;
         private readonly HashSet<TTarget> _targetAbsenceTypes;
@@ -16,15 +18,17 @@
             Func<TSource, object> getSourceKey,
             HashSet<TTarget> targetTypes,
             Func<TTarget, object> getTargetKey,
-            IdExportRelations repository
+            ExportRelations configuration
         )
         {
             _sourceAbsenceTypes = sourceTypes;
             _getSourceKey = getSourceKey;
             _targetAbsenceTypes = targetTypes;
             _getTargetKey = getTargetKey;
-            _repository = repository;
+            _configuration = configuration;
             _relations = new();
+
+            Update();
         }
 
         public static async Task<AbsenceTypeRelations<TSource, TTarget>> Initialize(
@@ -32,7 +36,7 @@
             Func<TSource, object> getSourceKey,
             HashSet<TTarget> targetTypes,
             Func<TTarget, object> getTargetKey,
-            IdExportRelations repository
+            ExportRelations repository
         )
         {
             var relations = new AbsenceTypeRelations<TSource, TTarget>(
@@ -43,23 +47,14 @@
                 repository
             );
 
-            await relations.LoadSettings();
-
             return relations;
-        }
-
-        private async Task LoadSettings()
-        {
-            await _repository.LoadFromSettings();
-            Update();
-            await Save();
         }
 
         private void Update()
         {
             _relations.Clear();
 
-            foreach (var configuredRelation in _repository)
+            foreach (var configuredRelation in _configuration.Relations)
             {
                 var source = _sourceAbsenceTypes.SingleOrDefault(absence =>
                     absence.Equals(configuredRelation.IdOfSourceSystem)
@@ -75,7 +70,7 @@
                 {
                     Source = source,
                     Target = target,
-                    Export = configuredRelation.Export
+                    Export = configuredRelation.Export,
                 };
 
                 _relations.Add(validRelation);
@@ -163,18 +158,18 @@
                 _relations.Remove(found);
         }
 
-        public async Task Save()
+        public ExportRelations GetConfigurationSettings()
         {
-            var update = _relations
-                .Select(rel => new IdExportRelation
+            _configuration.Relations = _relations
+                .Select(rel => new ExportRelation
                 {
                     Export = rel.Export,
                     IdOfSourceSystem = _getSourceKey(rel.Source),
-                    IdOfTargetSystem = rel.Target == null ? null : _getTargetKey(rel.Target)
+                    IdOfTargetSystem = rel.Target == null ? null : _getTargetKey(rel.Target),
                 })
                 .ToHashSet();
 
-            await _repository.OverwriteSettings(update);
+            return _configuration;
         }
     }
 }

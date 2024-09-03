@@ -5,7 +5,7 @@ using CSharpFunctionalExtensions;
 
 namespace coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.Mapping.TimeCardToGdi
 {
-    public class TimeCardExportRelationsRepository
+    public class TimeCardExportRelationsRepository : IExportRelationsRepository
     {
         private readonly TableClient _tableClient;
 
