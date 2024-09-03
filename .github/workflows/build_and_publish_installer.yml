@@ -24,7 +24,7 @@ jobs:
         run: dotnet nuget add source --username ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/co-IT/index.json"
 
       - name: Anwendung bauen
-        run: dotnet publish -c Release -r win-x64 ${{ github.workspace }}\coIT.Toolkit.AbsencesExport.csproj --property:PublishProfile="FolderProfile"
+        run: dotnet publish -c Release -r win-x64 ${{ github.workspace }}\coIT.Toolkit.AbsencesExport\coIT.Toolkit.AbsencesExport.csproj --property:PublishProfile="FolderProfile"
       
       - name: Installer bauen
         uses: caphyon/advinst-github-action@v2.0
@@ -32,7 +32,7 @@ jobs:
           advinst-version: '21.9'
           advinst-license: ${{ secrets.ADVINST_LICENSE_KEY }}
           advinst-enable-automation: 'true'
-          aip-path: ${{ github.workspace }}\coIT.Toolkit.AbsencesExport.Installer.aip
+          aip-path: ${{ github.workspace }}\coIT.Toolkit.AbsencesExport\coIT.Toolkit.AbsencesExport.Installer.aip
           aip-build-name: DefaultBuild
           aip-package-name: coIT.Toolkit.AbsencesExport.Installer-${{github.ref_name}}.msi
           aip-output-dir:  ${{ github.workspace }}\setup
