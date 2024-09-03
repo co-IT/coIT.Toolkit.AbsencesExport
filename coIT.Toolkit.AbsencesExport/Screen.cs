@@ -1,9 +1,12 @@
 using System.Reflection;
 using coIT.AbsencesExport.UserForms;
 using coIT.Libraries.Clockodo.Absences.Contracts;
+using coIT.Libraries.ConfigurationManager;
 using coIT.Libraries.ConfigurationManager.Cryptography;
+using coIT.Libraries.ConfigurationManager.Serialization;
 using coIT.Libraries.Gdi.HumanResources;
 using coIT.Libraries.TimeCard.DataContracts;
+using coIT.Toolkit.AbsencesExport;
 using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.ClockodoAbwesenheitsTypen;
 using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.GdiAbwesenheitsTypen;
 using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.Konfiguration.ClockodoKonfiguration;
@@ -15,16 +18,11 @@ namespace coIT.AbsencesExport
 {
     public partial class Screen : Form
     {
-        private readonly AppConfiguration _appConfig;
+        private AzureTableKonfiguration _azureTableKonfiguration;
 
         public Screen()
         {
             InitializeComponent();
-
-            var appName =
-                Assembly.GetEntryAssembly()?.GetName().Name ?? throw new NullReferenceException();
-            var connectionString = Environment.GetEnvironmentVariable("ConnectionString");
-            _appConfig = new AppConfiguration(appName, connectionString);
         }
 
         private async void LoadMain(object sender, EventArgs e)
@@ -32,37 +30,40 @@ namespace coIT.AbsencesExport
             var loadingForm = new LoadingForm();
             Enabled = false;
 
-            // TODO: Man braucht nur connection string
-            var initialConfigurationNeeded = _appConfig.IsInitialConfigurationNeeded();
-
-            if (initialConfigurationNeeded)
-                StartFirstInitialization();
-
             var encryptionService = AesCryptographyService
                 .FromKey(
                     "eyJJdGVtMSI6InlLdHdrUDJraEJRbTRTckpEaXFjQWpkM3pBc3NVdG8rSUNrTmFwYUgwbWs9IiwiSXRlbTIiOiJUblRxT1RUbXI3ajBCZlUwTEtnOS9BPT0ifQ=="
                 )
                 .Value;
+            var serializer = new NewtonsoftJsonSerializer();
+            var environmentManager = new EnvironmentManager(encryptionService, serializer);
+
+            var loadConnectionStringResult = await environmentManager.Get<AzureTableKonfiguration>("COIT_TOOLKIT_DATABASE_CONNECTIONSTRING");
+
+            if (loadConnectionStringResult.IsFailure)
+                await StartFirstInitialization(environmentManager);
+            else
+                _azureTableKonfiguration = loadConnectionStringResult.Value;
 
             var gdiRepository = new GdiAbwesenheitDataTableRepository(
-                _appConfig.GetConnectionString()
+                _azureTableKonfiguration.ConnectionString
             );
             var clockodoAbsenceTypesRepository = new ClockodoAbwesenheitsTypeDataTableRespository(
-                _appConfig.GetConnectionString()
+                _azureTableKonfiguration.ConnectionString
             );
             var clockodoSettingsRepository = new ClockodoKonfigurationDataTableRepository(
-                _appConfig.GetConnectionString(),
+                _azureTableKonfiguration.ConnectionString,
                 encryptionService
             );
             var clockodoExportRelationsRepository = new ClockodoExportRelationsRepository(
-                _appConfig.GetConnectionString()
+                _azureTableKonfiguration.ConnectionString
             );
             var timeCardSettingsRepository = new TimeCardKonfigurationDataTableRepository(
-                _appConfig.GetConnectionString(),
+                _azureTableKonfiguration.ConnectionString,
                 encryptionService
             );
             var timeCardExportRelationsRepository = new TimeCardExportRelationsRepository(
-                _appConfig.GetConnectionString()
+                _azureTableKonfiguration.ConnectionString
             );
 
             loadingForm.Show();
@@ -86,7 +87,7 @@ namespace coIT.AbsencesExport
             Enabled = true;
         }
 
-        private void StartFirstInitialization()
+        private async Task StartFirstInitialization(EnvironmentManager environmentManager)
         {
             using (var initializeConfigurationForm = new InitializeConfigurationForm())
             {
@@ -97,9 +98,8 @@ namespace coIT.AbsencesExport
                     throw new NotImplementedException();
                 }
 
-                var gdiConfig = initializeConfigurationForm.GdiConfiguration!;
-
-                _appConfig.Save(new List<object> { gdiConfig });
+                _azureTableKonfiguration = initializeConfigurationForm.AzureTableKonfiguration;
+                await environmentManager.Save(_azureTableKonfiguration, "COIT_TOOLKIT_DATABASE_CONNECTIONSTRING");
             }
         }
 
