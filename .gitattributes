@@ -1,1 +1,6 @@
-* text=auto
+# Always use lf
+* text=auto eol=lf
+
+# Better tooling for dotnet
+*.sln text merge=union
+*.cs diff=csharp
