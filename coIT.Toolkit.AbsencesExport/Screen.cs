@@ -1,20 +1,19 @@
-using System.Reflection;
-using coIT.AbsencesExport.UserForms;
 using coIT.Libraries.Clockodo.Absences.Contracts;
 using coIT.Libraries.ConfigurationManager;
 using coIT.Libraries.ConfigurationManager.Cryptography;
 using coIT.Libraries.ConfigurationManager.Serialization;
 using coIT.Libraries.Gdi.HumanResources;
 using coIT.Libraries.TimeCard.DataContracts;
-using coIT.Toolkit.AbsencesExport;
 using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.ClockodoAbwesenheitsTypen;
 using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.GdiAbwesenheitsTypen;
 using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.Konfiguration.ClockodoKonfiguration;
+using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.Konfiguration.TimeCardKonfiguration;
 using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.Mapping;
 using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.Mapping.ClockodoToGdi;
 using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.Mapping.TimeCardToGdi;
+using coIT.Toolkit.AbsencesExport.UserForms;
 
-namespace coIT.AbsencesExport
+namespace coIT.Toolkit.AbsencesExport
 {
     public partial class Screen : Form
     {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
 
-namespace coIT.AbsencesExport
+namespace coIT.Toolkit.AbsencesExport
 {
     internal interface IExportAbsences<TSource>
         where TSource : class, IEquatable<TSource>, IEquatable<int>, IComparable<TSource>

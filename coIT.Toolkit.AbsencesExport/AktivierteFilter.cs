@@ -1,6 +1,6 @@
-﻿using coIT.AbsencesExport.Specifications;
+﻿using coIT.Toolkit.AbsencesExport.Specifications;
 
-namespace coIT.AbsencesExport;
+namespace coIT.Toolkit.AbsencesExport;
 
 internal class AktivierteFilter<TSource, TTarget>
 {

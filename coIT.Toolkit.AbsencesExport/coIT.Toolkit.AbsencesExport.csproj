@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
-    <StartupObject>coIT.AbsencesExport.Program</StartupObject>
+    <StartupObject>coIT.Toolkit.AbsencesExport.Program</StartupObject>
     <ApplicationIcon>icon.ico</ApplicationIcon>
     <BaseOutputPath>..\..\build\coIT.AbsencesExport</BaseOutputPath>
   </PropertyGroup>

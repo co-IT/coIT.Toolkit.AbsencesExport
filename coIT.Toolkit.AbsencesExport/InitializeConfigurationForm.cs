@@ -1,8 +1,4 @@
-using coIT.AbsencesExport.Configurations;
-using coIT.Libraries.Gdi.HumanResources;
-using coIT.Toolkit.AbsencesExport;
-
-namespace coIT.AbsencesExport
+namespace coIT.Toolkit.AbsencesExport
 {
     public partial class InitializeConfigurationForm : Form
     {

@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace coIT.AbsencesExport.Specifications
+namespace coIT.Toolkit.AbsencesExport.Specifications
 {
     public abstract class Spezifikation<T>
     {

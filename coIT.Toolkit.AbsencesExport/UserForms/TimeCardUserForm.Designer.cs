@@ -1,4 +1,4 @@
-﻿namespace coIT.AbsencesExport.UserForms
+﻿namespace coIT.Toolkit.AbsencesExport.UserForms
 {
     partial class TimeCardUserForm
     {

@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace coIT.AbsencesExport
+namespace coIT.Toolkit.AbsencesExport
 {
     internal static class Program
     {/// <summary>

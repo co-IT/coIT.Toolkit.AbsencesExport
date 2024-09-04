@@ -1,6 +1,6 @@
-using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.Mapping;
+﻿using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.Mapping;
 
-namespace coIT.AbsencesExport.Mapping
+namespace coIT.Toolkit.AbsencesExport.Mapping
 {
     internal class AbsenceTypeRelations<TSource, TTarget>
         where TSource : class, IEquatable<TSource>, IEquatable<int>, IComparable<TSource>

@@ -1,10 +1,10 @@
 using System.Collections.Immutable;
 using System.ComponentModel;
-using coIT.AbsencesExport.Specifications;
-using coIT.AbsencesExport.UserForms;
 using coIT.Libraries.WinForms.DateTimeButtons;
+using coIT.Toolkit.AbsencesExport.Specifications;
+using coIT.Toolkit.AbsencesExport.UserForms;
 
-namespace coIT.AbsencesExport
+namespace coIT.Toolkit.AbsencesExport
 {
     public partial class MainUi<TSource, TTarget> : UserControl
         where TSource : class, IEquatable<TSource>, IEquatable<int>, IComparable<TSource>

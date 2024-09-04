@@ -4,7 +4,7 @@ using coIT.Libraries.ConfigurationManager.Cryptography;
 using coIT.Libraries.TimeCard;
 using CSharpFunctionalExtensions;
 
-namespace coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.Konfiguration.ClockodoKonfiguration
+namespace coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.Konfiguration.TimeCardKonfiguration
 {
     public class TimeCardKonfigurationDataTableRepository : ITimeCardKonfigurationRepository
     {

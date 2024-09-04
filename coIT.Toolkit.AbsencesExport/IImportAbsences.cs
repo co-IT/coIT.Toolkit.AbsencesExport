@@ -1,4 +1,4 @@
-﻿namespace coIT.AbsencesExport
+﻿namespace coIT.Toolkit.AbsencesExport
 {
     internal interface IImportAbsences<TTarget>
         where TTarget : class, IEquatable<TTarget>, IEquatable<int>, IComparable<TTarget>

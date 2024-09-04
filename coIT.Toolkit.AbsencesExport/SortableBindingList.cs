@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace coIT.AbsencesExport
+namespace coIT.Toolkit.AbsencesExport
 {
     public class SortableBindingList<T> : BindingList<T>
         where T : class

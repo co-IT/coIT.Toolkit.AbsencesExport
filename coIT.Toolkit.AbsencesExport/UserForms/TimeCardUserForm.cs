@@ -1,11 +1,10 @@
 using System.Collections.Immutable;
-using coIT.AbsencesExport.Configurations;
 using coIT.Libraries.TimeCard;
 using coIT.Libraries.TimeCard.DataContracts;
-using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.Konfiguration.ClockodoKonfiguration;
+using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.Konfiguration.TimeCardKonfiguration;
 using CSharpFunctionalExtensions;
 
-namespace coIT.AbsencesExport.UserForms;
+namespace coIT.Toolkit.AbsencesExport.UserForms;
 
 public partial class TimeCardUserForm : UserControl, IExportAbsences<TimeCardAbsenceType>
 {

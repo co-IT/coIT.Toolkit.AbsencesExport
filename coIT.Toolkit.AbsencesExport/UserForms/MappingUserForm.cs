@@ -1,11 +1,9 @@
-using System.Collections.Immutable;
-using System.Text;
-using coIT.AbsencesExport.Mapping;
+﻿using System.Collections.Immutable;
 using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.Mapping;
+using coIT.Toolkit.AbsencesExport.Mapping;
 using CSharpFunctionalExtensions;
-using Newtonsoft.Json;
 
-namespace coIT.AbsencesExport.UserForms;
+namespace coIT.Toolkit.AbsencesExport.UserForms;
 
 public partial class MappingUserForm<TSource, TTarget> : UserControl
     where TSource : class, IEquatable<TSource>, IEquatable<int>, IComparable<TSource>

@@ -1,6 +1,6 @@
 ﻿using coIT.Libraries.Gdi.HumanResources;
 
-namespace coIT.AbsencesExport.Configurations
+namespace coIT.Toolkit.AbsencesExport.Configurations
 {
     public class GdiConfiguration
     {

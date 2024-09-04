@@ -1,7 +1,7 @@
 using Azure;
 using Azure.Data.Tables;
 
-namespace coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.Konfiguration.ClockodoKonfiguration
+namespace coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.Konfiguration.TimeCardKonfiguration
 {
     internal class TimeCardKonfigurationEntity : ITableEntity
     {

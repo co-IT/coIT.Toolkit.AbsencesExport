@@ -1,4 +1,4 @@
-namespace coIT.AbsencesExport
+namespace coIT.Toolkit.AbsencesExport
 {
     public partial class LoadingForm : Form
     {

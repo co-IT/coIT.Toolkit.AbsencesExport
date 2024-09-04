@@ -1,6 +1,7 @@
 using coIT.Libraries.ConfigurationManager.Cryptography;
 using coIT.Libraries.TimeCard;
 using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.Konfiguration.ClockodoKonfiguration;
+using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.Konfiguration.TimeCardKonfiguration;
 using CSharpFunctionalExtensions;
 
 namespace coIT.Toolkit.AbsencesExport.Migration.TimeCard

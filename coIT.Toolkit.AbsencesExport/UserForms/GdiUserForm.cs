@@ -1,10 +1,9 @@
 using System.Text;
-using coIT.AbsencesExport.Configurations;
 using coIT.Libraries.Gdi.HumanResources;
 using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.GdiAbwesenheitsTypen;
 using CSharpFunctionalExtensions;
 
-namespace coIT.AbsencesExport.UserForms
+namespace coIT.Toolkit.AbsencesExport.UserForms
 {
     public partial class GdiUserForm : UserControl, IImportAbsences<GdiAbsenceType>
     {

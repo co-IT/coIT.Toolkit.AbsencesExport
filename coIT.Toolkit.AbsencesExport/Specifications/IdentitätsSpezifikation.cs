@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace coIT.AbsencesExport.Specifications
+namespace coIT.Toolkit.AbsencesExport.Specifications
 {
     internal class IdentitätsSpezifikation<T> : Spezifikation<T>
     {

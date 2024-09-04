@@ -1,12 +1,11 @@
 using System.Collections.Immutable;
-using coIT.AbsencesExport.Configurations;
 using coIT.Libraries.Clockodo.Absences;
 using coIT.Libraries.Clockodo.Absences.Contracts;
 using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.ClockodoAbwesenheitsTypen;
 using coIT.Toolkit.AbsencesExport.Infrastructure.Infrastructure.Konfiguration.ClockodoKonfiguration;
 using CSharpFunctionalExtensions;
 
-namespace coIT.AbsencesExport.UserForms;
+namespace coIT.Toolkit.AbsencesExport.UserForms;
 
 public partial class ClockodoUserForm : UserControl, IExportAbsences<ClockodoAbsenceType>
 {

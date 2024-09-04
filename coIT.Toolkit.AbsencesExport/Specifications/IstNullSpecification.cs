@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace coIT.AbsencesExport.Specifications
+namespace coIT.Toolkit.AbsencesExport.Specifications
 {
     internal class IstNullSpecification<TSource, TTarget>
         : Spezifikation<Abwesenheitseintrag<TSource, TTarget>>
