@@ -1,9 +1,8 @@
 ﻿using coIT.Libraries.Gdi.HumanResources;
 
-namespace coIT.Toolkit.AbsencesExport.Configurations
+namespace coIT.Toolkit.AbsencesExport.Configurations;
+
+public class GdiConfiguration
 {
-    public class GdiConfiguration
-    {
-        public HashSet<GdiAbsenceType> AbsenceTypes { get; set; } = new();
-    }
+  public HashSet<GdiAbsenceType> AbsenceTypes { get; set; } = new();
 }

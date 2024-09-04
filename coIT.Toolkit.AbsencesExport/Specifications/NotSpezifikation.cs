@@ -1,22 +1,21 @@
 using System.Linq.Expressions;
 
-namespace coIT.Toolkit.AbsencesExport.Specifications
+namespace coIT.Toolkit.AbsencesExport.Specifications;
+
+internal class NotSpezifikation<T> : Spezifikation<T>
 {
-    internal class NotSpezifikation<T> : Spezifikation<T>
-    {
-        private readonly Spezifikation<T> _spezifikation;
+  private readonly Spezifikation<T> _spezifikation;
 
-        public NotSpezifikation(Spezifikation<T> spezifikation)
-        {
-            _spezifikation = spezifikation;
-        }
+  public NotSpezifikation(Spezifikation<T> spezifikation)
+  {
+    _spezifikation = spezifikation;
+  }
 
-        public override Expression<Func<T, bool>> ToExpression()
-        {
-            Expression<Func<T, bool>> expression = _spezifikation.ToExpression();
-            UnaryExpression notExpression = Expression.Not(expression.Body);
+  public override Expression<Func<T, bool>> ToExpression()
+  {
+    var expression = _spezifikation.ToExpression();
+    var notExpression = Expression.Not(expression.Body);
 
-            return Expression.Lambda<Func<T, bool>>(notExpression, expression.Parameters.Single());
-        }
-    }
+    return Expression.Lambda<Func<T, bool>>(notExpression, expression.Parameters.Single());
+  }
 }

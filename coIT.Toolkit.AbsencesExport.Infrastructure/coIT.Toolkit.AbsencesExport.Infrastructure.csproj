@@ -7,11 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Azure.Data.Tables" Version="12.9.0" />
-    <PackageReference Include="coIT.Libraries.Clockodo" Version="1.0.0" />
-    <PackageReference Include="coIT.Libraries.ConfigurationManager" Version="1.0.0" />
-    <PackageReference Include="coIT.Libraries.Gdi" Version="1.0.0" />
-    <PackageReference Include="coIT.Libraries.TimeCard" Version="1.0.0" />
+    <PackageReference Include="Azure.Data.Tables" Version="12.9.0"/>
+    <PackageReference Include="coIT.Libraries.Clockodo" Version="1.0.0"/>
+    <PackageReference Include="coIT.Libraries.ConfigurationManager" Version="1.0.0"/>
+    <PackageReference Include="coIT.Libraries.Gdi" Version="1.0.0"/>
+    <PackageReference Include="coIT.Libraries.TimeCard" Version="1.0.0"/>
   </ItemGroup>
 
 </Project>

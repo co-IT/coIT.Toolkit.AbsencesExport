@@ -1,12 +1,11 @@
 ﻿using System.Linq.Expressions;
 
-namespace coIT.Toolkit.AbsencesExport.Specifications
+namespace coIT.Toolkit.AbsencesExport.Specifications;
+
+internal class IdentitätsSpezifikation<T> : Spezifikation<T>
 {
-    internal class IdentitätsSpezifikation<T> : Spezifikation<T>
-    {
-        public override Expression<Func<T, bool>> ToExpression()
-        {
-            return x => true;
-        }
-    }
+  public override Expression<Func<T, bool>> ToExpression()
+  {
+    return x => true;
+  }
 }

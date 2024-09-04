@@ -1,20 +1,19 @@
-namespace coIT.Toolkit.AbsencesExport
+namespace coIT.Toolkit.AbsencesExport;
+
+public partial class InitializeConfigurationForm : Form
 {
-    public partial class InitializeConfigurationForm : Form
-    {
-        public AzureTableKonfiguration AzureTableKonfiguration { get; private set; }
+  public InitializeConfigurationForm()
+  {
+    InitializeComponent();
+  }
 
-        public InitializeConfigurationForm()
-        {
-            InitializeComponent();
-        }
+  public AzureTableKonfiguration AzureTableKonfiguration { get; private set; }
 
-        private void btnCreateConfig_Click(object sender, EventArgs e)
-        {
-            AzureTableKonfiguration = new AzureTableKonfiguration { ConnectionString = tbxConnectionString.Text };
+  private void btnCreateConfig_Click(object sender, EventArgs e)
+  {
+    AzureTableKonfiguration = new AzureTableKonfiguration { ConnectionString = tbxConnectionString.Text };
 
-            DialogResult = DialogResult.OK;
-            Close();
-        }
-    }
+    DialogResult = DialogResult.OK;
+    Close();
+  }
 }

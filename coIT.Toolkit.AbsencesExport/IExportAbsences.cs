@@ -1,22 +1,21 @@
 ﻿using System.Collections.Immutable;
 
-namespace coIT.Toolkit.AbsencesExport
+namespace coIT.Toolkit.AbsencesExport;
+
+internal interface IExportAbsences<TSource>
+  where TSource : class, IEquatable<TSource>, IEquatable<int>, IComparable<TSource>
 {
-    internal interface IExportAbsences<TSource>
-        where TSource : class, IEquatable<TSource>, IEquatable<int>, IComparable<TSource>
-    {
-        HashSet<TSource> GetAllAbsenceTypes();
+  HashSet<TSource> GetAllAbsenceTypes();
 
-        Task<IImmutableList<AbwesenheitseintragOhneMapping<TSource>>> AllAbsences(
-            DateTime start,
-            DateTime ende,
-            LoadingForm loadingForm
-        );
+  Task<IImmutableList<AbwesenheitseintragOhneMapping<TSource>>> AllAbsences(
+    DateTime start,
+    DateTime ende,
+    LoadingForm loadingForm
+  );
 
-        UserControl GetControl();
+  UserControl GetControl();
 
-        bool HasLoadedCorrectly();
+  bool HasLoadedCorrectly();
 
-        string GetLoadErrorMessage();
-    }
+  string GetLoadErrorMessage();
 }

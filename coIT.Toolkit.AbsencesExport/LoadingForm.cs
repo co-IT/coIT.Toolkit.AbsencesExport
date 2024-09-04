@@ -1,16 +1,15 @@
-namespace coIT.Toolkit.AbsencesExport
-{
-    public partial class LoadingForm : Form
-    {
-        public LoadingForm()
-        {
-            InitializeComponent();
-        }
+namespace coIT.Toolkit.AbsencesExport;
 
-        public void SetStatus(string text, int percent)
-        {
-            lblStatusText.Text = text;
-            pgbStatus.Value = percent;
-        }
-    }
+public partial class LoadingForm : Form
+{
+  public LoadingForm()
+  {
+    InitializeComponent();
+  }
+
+  public void SetStatus(string text, int percent)
+  {
+    lblStatusText.Text = text;
+    pgbStatus.Value = percent;
+  }
 }

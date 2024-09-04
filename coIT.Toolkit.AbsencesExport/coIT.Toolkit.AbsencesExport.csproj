@@ -10,21 +10,21 @@
     <BaseOutputPath>..\..\build\coIT.AbsencesExport</BaseOutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="icon.ico" />
+    <Content Include="icon.ico"/>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Ardalis.SmartEnum" Version="7.0.0" />
-    <PackageReference Include="Azure.Data.Tables" Version="12.9.0" />
-    <PackageReference Include="coIT.Libraries.Clockodo" Version="1.0.0" />
-    <PackageReference Include="coIT.Libraries.ConfigurationManager" Version="1.1.0" />
-    <PackageReference Include="coIT.Libraries.Gdi" Version="1.0.0" />
-    <PackageReference Include="coIT.Libraries.TimeCard" Version="1.0.0" />
-    <PackageReference Include="coIT.Libraries.WinForms" Version="1.0.0" />
-    <PackageReference Include="CSharpFunctionalExtensions" Version="2.42.5" />
-    <PackageReference Include="Microsoft.DependencyValidation.Analyzers" Version="0.11.0" />
+    <PackageReference Include="Ardalis.SmartEnum" Version="7.0.0"/>
+    <PackageReference Include="Azure.Data.Tables" Version="12.9.0"/>
+    <PackageReference Include="coIT.Libraries.Clockodo" Version="1.0.0"/>
+    <PackageReference Include="coIT.Libraries.ConfigurationManager" Version="1.1.0"/>
+    <PackageReference Include="coIT.Libraries.Gdi" Version="1.0.0"/>
+    <PackageReference Include="coIT.Libraries.TimeCard" Version="1.0.0"/>
+    <PackageReference Include="coIT.Libraries.WinForms" Version="1.0.0"/>
+    <PackageReference Include="CSharpFunctionalExtensions" Version="2.42.5"/>
+    <PackageReference Include="Microsoft.DependencyValidation.Analyzers" Version="0.11.0"/>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\coIT.Toolkit.AbsencesExport.Infrastructure\coIT.Toolkit.AbsencesExport.Infrastructure.csproj" />
+    <ProjectReference Include="..\coIT.Toolkit.AbsencesExport.Infrastructure\coIT.Toolkit.AbsencesExport.Infrastructure.csproj"/>
   </ItemGroup>
   <ItemGroup>
     <None Update="config\clockodo-mapping\clockodo-mapping-settings-Standardkonfiguration.json">

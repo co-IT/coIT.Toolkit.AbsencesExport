@@ -1,15 +1,14 @@
-﻿namespace coIT.Toolkit.AbsencesExport
+﻿namespace coIT.Toolkit.AbsencesExport;
+
+internal interface IImportAbsences<TTarget>
+  where TTarget : class, IEquatable<TTarget>, IEquatable<int>, IComparable<TTarget>
 {
-    internal interface IImportAbsences<TTarget>
-        where TTarget : class, IEquatable<TTarget>, IEquatable<int>, IComparable<TTarget>
-    {
-        HashSet<TTarget> GetAllAbsenceTypes();
+  HashSet<TTarget> GetAllAbsenceTypes();
 
-        UserControl GetControl();
+  UserControl GetControl();
 
-        bool HasLoadedCorrectly();
+  bool HasLoadedCorrectly();
 
-        string GetLoadErrorMessage();
-        void ExportAbsences(List<AbwesenheitseintragOhneMapping<TTarget>> exportAbsences);
-    }
+  string GetLoadErrorMessage();
+  void ExportAbsences(List<AbwesenheitseintragOhneMapping<TTarget>> exportAbsences);
 }

@@ -8,285 +8,277 @@ namespace coIT.Toolkit.AbsencesExport.UserForms;
 
 public partial class TimeCardUserForm : UserControl, IExportAbsences<TimeCardAbsenceType>
 {
-    private readonly ITimeCardKonfigurationRepository _timeCardKonfigurationRepository;
-    private TimeCardService _timeCardService;
+  private readonly ITimeCardKonfigurationRepository _timeCardKonfigurationRepository;
+  private HashSet<TimeCardAbsenceType> _absenceTypes = new();
 
-    private TimeCardUserForm()
+  private IImmutableList<TimeCardEmployeesWithGroups> _employees =
+    new List<TimeCardEmployeesWithGroups>().ToImmutableList();
+
+  private TimeCardService _timeCardService;
+
+  private TimeCardUserForm()
+  {
+    InitializeComponent();
+  }
+
+  private TimeCardUserForm(ITimeCardKonfigurationRepository timeCardKonfigurationRepository)
+    : this()
+  {
+    _timeCardKonfigurationRepository = timeCardKonfigurationRepository;
+  }
+
+  public bool LoadedCorrectly { get; private set; } = true;
+  public string LoadErrorMessage { get; private set; } = string.Empty;
+
+  public async Task<IImmutableList<AbwesenheitseintragOhneMapping<TimeCardAbsenceType>>> AllAbsences(
+    DateTime start,
+    DateTime ende,
+    LoadingForm loadingForm
+  )
+  {
+    var rawAbsences = await ReceiveAllAbsences(start, ende, loadingForm);
+
+    var holidayAbsenceType = _absenceTypes.FirstOrDefault(absence => absence.ToString() == "Feiertag");
+    var feiertage = FilterHolidays(rawAbsences, holidayAbsenceType);
+    var abwesenheitenGruppiert = GroupOngoingSingleDayEvents(rawAbsences, holidayAbsenceType);
+    return AbwesenheitenMitMitarbeiterKombinieren(abwesenheitenGruppiert, _employees, feiertage);
+  }
+
+  public HashSet<TimeCardAbsenceType> GetAllAbsenceTypes()
+  {
+    return _absenceTypes;
+  }
+
+  public UserControl GetControl()
+  {
+    return this;
+  }
+
+  public bool HasLoadedCorrectly()
+  {
+    return LoadedCorrectly;
+  }
+
+  public string GetLoadErrorMessage()
+  {
+    return LoadErrorMessage;
+  }
+
+  private async Task<int> GetNoExportGroup()
+  {
+    var config = await _timeCardKonfigurationRepository.Get();
+    if (config.IsFailure)
+      return -1;
+
+    return config.Value.NoExportGroup;
+  }
+
+  public static async Task<TimeCardUserForm> Create(ITimeCardKonfigurationRepository timeCardKonfigurationRepository)
+  {
+    var userForm = new TimeCardUserForm(timeCardKonfigurationRepository);
+
+    await userForm.LoadConfiguration();
+    userForm.UpdateDisplay();
+    return userForm;
+  }
+
+  private IImmutableList<AbwesenheitseintragOhneMapping<TimeCardAbsenceType>> AbwesenheitenMitMitarbeiterKombinieren(
+    IImmutableList<GroupedTimeCardAbsence> absences,
+    IImmutableList<TimeCardEmployeesWithGroups> alleMitarbeiter,
+    ImmutableList<DateTime> feiertage
+  )
+  {
+    var abwesenheiten = new List<AbwesenheitseintragOhneMapping<TimeCardAbsenceType>>();
+
+    foreach (var abwesenheit in absences)
     {
-        InitializeComponent();
+      var mitarbeiter = alleMitarbeiter.Single(m => m.Id == abwesenheit.Employee);
+
+      var name = mitarbeiter.Name;
+      var nummer = mitarbeiter.PersonNo.ToString();
+
+      var timeCardAbwesenheit = abwesenheit.AbsenceType;
+
+      var anzahlTage = 1f;
+      if (abwesenheit.Time.Contains("%"))
+      {
+        var bruchteilTagInProzent = abwesenheit.Time.Replace(" %", "");
+        var bruchteilTag = int.Parse(bruchteilTagInProzent) / 100f;
+        anzahlTage = bruchteilTag;
+      }
+      else if (abwesenheit.Time != "Ganzer Tag")
+      {
+        anzahlTage = 0.5f;
+      }
+
+      var nettoDuration = 0f;
+      var current = abwesenheit.Date;
+
+      while (current <= abwesenheit.End)
+      {
+        if (current.DayOfWeek != DayOfWeek.Saturday && current.DayOfWeek != DayOfWeek.Sunday)
+          nettoDuration++;
+
+        current = current.AddDays(1);
+      }
+      ;
+
+      foreach (var feiertag in feiertage)
+        if (feiertag <= abwesenheit.End && feiertag >= abwesenheit.Date)
+          nettoDuration -= 1;
+
+      if (nettoDuration == 1)
+        nettoDuration = anzahlTage;
+
+      abwesenheiten.Add(
+        new AbwesenheitseintragOhneMapping<TimeCardAbsenceType>(
+          name,
+          int.Parse(nummer),
+          timeCardAbwesenheit,
+          abwesenheit.Date,
+          abwesenheit.End,
+          nettoDuration
+        )
+      );
     }
 
-    private TimeCardUserForm(ITimeCardKonfigurationRepository timeCardKonfigurationRepository)
-        : this()
+    return abwesenheiten.ToImmutableList();
+  }
+
+  private async Task<IImmutableList<TimeCardAbsence>> ReceiveAllAbsences(
+    DateTime start,
+    DateTime ende,
+    LoadingForm loadingForm
+  )
+  {
+    var current = start;
+
+    var total = (ende - start).Days + 1;
+
+    var absences = new List<TimeCardAbsence>();
+    while (current <= ende)
     {
-        _timeCardKonfigurationRepository = timeCardKonfigurationRepository;
+      var daysLeft = (ende - current).Days + 1;
+      var daysDone = (float)total - daysLeft;
+      var percent = (int)Math.Round(daysDone / total * 100);
+      loadingForm.SetStatus($"{daysDone}/{total} Tage abgefragt", percent);
+
+      if (current.DayOfWeek != DayOfWeek.Saturday && current.DayOfWeek != DayOfWeek.Sunday)
+      {
+        var getAbsencesTask = await _timeCardService.AllAbsences(_employees.ToList(), current);
+        absences.AddRange(getAbsencesTask);
+      }
+
+      current = current.AddDays(1);
     }
 
-    public bool LoadedCorrectly { get; private set; } = true;
-    public string LoadErrorMessage { get; private set; } = string.Empty;
-    private HashSet<TimeCardAbsenceType> _absenceTypes = new();
+    loadingForm.Hide();
+    return absences.ToImmutableList();
+  }
 
-    private async Task<int> GetNoExportGroup()
-    {
-        var config = await _timeCardKonfigurationRepository.Get();
-        if (config.IsFailure)
-            return -1;
+  private ImmutableList<DateTime> FilterHolidays(
+    IImmutableList<TimeCardAbsence> absences,
+    TimeCardAbsenceType holidayType
+  )
+  {
+    return _timeCardService.FilterHolidays(absences, holidayType);
+  }
 
-        return config.Value.NoExportGroup;
-    }
+  private ImmutableList<GroupedTimeCardAbsence> GroupOngoingSingleDayEvents(
+    IImmutableList<TimeCardAbsence> absences,
+    TimeCardAbsenceType holidayType
+  )
+  {
+    return _timeCardService.GroupOngoingSingleDayEvents(absences, holidayType);
+  }
 
-    private IImmutableList<TimeCardEmployeesWithGroups> _employees =
-        new List<TimeCardEmployeesWithGroups>().ToImmutableList();
+  private async Task LoadConfiguration()
+  {
+    TimeCardService service = null;
+    IImmutableList<TimeCardEmployeesWithGroups> employees = null;
+    ImmutableHashSet<TimeCardAbsenceType> absenceTypes = null;
 
-    public static async Task<TimeCardUserForm> Create(
-        ITimeCardKonfigurationRepository timeCardKonfigurationRepository
-    )
-    {
-        var userForm = new TimeCardUserForm(timeCardKonfigurationRepository);
+    await _timeCardKonfigurationRepository
+      .Get()
+      .MapTry(
+        async config => service = await StartTimeCardService(config),
+        ex => "Verbindung zu TimeCard konnte nicht hergestellt werden"
+      )
+      .MapTry(
+        async timecardService => employees = await timecardService.AllEmployees(),
+        ex => "TimeCard Mitarbeiterliste konnte nicht abgerufen werden"
+      )
+      .MapTry(
+        async _ => absenceTypes = await service.GetAllAbsenceTypes(),
+        ex => "TimeCard Abwesenheitsliste konnte nicht abgerufen werden"
+      )
+      .TapError(DisplayError);
 
-        await userForm.LoadConfiguration();
-        userForm.UpdateDisplay();
-        return userForm;
-    }
+    _timeCardService = service;
+    _employees = employees;
+    _absenceTypes = absenceTypes.ToHashSet();
+  }
 
-    public async Task<
-        IImmutableList<AbwesenheitseintragOhneMapping<TimeCardAbsenceType>>
-    > AllAbsences(DateTime start, DateTime ende, LoadingForm loadingForm)
-    {
-        var rawAbsences = await ReceiveAllAbsences(start, ende, loadingForm);
+  private void UpdateDisplay()
+  {
+    DisplayConfiguration();
+    DisplayAbsenceTypeList();
+  }
 
-        var holidayAbsenceType = _absenceTypes.FirstOrDefault(absence =>
-            absence.ToString() == "Feiertag"
-        );
-        var feiertage = FilterHolidays(rawAbsences, holidayAbsenceType);
-        var abwesenheitenGruppiert = GroupOngoingSingleDayEvents(rawAbsences, holidayAbsenceType);
-        return AbwesenheitenMitMitarbeiterKombinieren(
-            abwesenheitenGruppiert,
-            _employees,
-            feiertage
-        );
-    }
+  private void DisplayError(string error)
+  {
+    LoadErrorMessage = error;
+    LoadedCorrectly = false;
+  }
 
-    private IImmutableList<
-        AbwesenheitseintragOhneMapping<TimeCardAbsenceType>
-    > AbwesenheitenMitMitarbeiterKombinieren(
-        IImmutableList<GroupedTimeCardAbsence> absences,
-        IImmutableList<TimeCardEmployeesWithGroups> alleMitarbeiter,
-        ImmutableList<DateTime> feiertage
-    )
-    {
-        var abwesenheiten = new List<AbwesenheitseintragOhneMapping<TimeCardAbsenceType>>();
+  private async Task DisplayConfiguration()
+  {
+    var config = await _timeCardKonfigurationRepository.Get();
+    if (config.IsFailure)
+      return;
 
-        foreach (var abwesenheit in absences)
-        {
-            var mitarbeiter = alleMitarbeiter.Single(m => m.Id == abwesenheit.Employee);
+    tbxApiAddress.Text = config.Value.WebAddress;
+    tbxApiUser.Text = config.Value.Username;
+    tbxApiSchluessel.Text = config.Value.Password;
+    nbxKeinExportGruppenId.Value = config.Value.NoExportGroup;
+  }
 
-            var name = mitarbeiter.Name;
-            var nummer = mitarbeiter.PersonNo.ToString();
+  private void DisplayAbsenceTypeList()
+  {
+    lbxAbsenceTypes.Items.Clear();
+    var orderedAbsenceArray = _absenceTypes.OrderBy(a => a.DisplayText).ToArray();
+    lbxAbsenceTypes.Items.AddRange(orderedAbsenceArray);
+  }
 
-            var timeCardAbwesenheit = abwesenheit.AbsenceType;
+  private async Task<TimeCardService> StartTimeCardService(TimeCardSettings timeCardSettings)
+  {
+    var timeCardService = await TimeCardService.Login(timeCardSettings);
 
-            var anzahlTage = 1f;
-            if (abwesenheit.Time.Contains("%"))
-            {
-                var bruchteilTagInProzent = abwesenheit.Time.Replace(" %", "");
-                var bruchteilTag = int.Parse(bruchteilTagInProzent) / 100f;
-                anzahlTage = bruchteilTag;
-            }
-            else if (abwesenheit.Time != "Ganzer Tag")
-            {
-                anzahlTage = 0.5f;
-            }
+    return timeCardService;
+  }
 
-            var nettoDuration = 0f;
-            var current = abwesenheit.Date;
+  private void btnStoreConfiguration_click(object sender, EventArgs e)
+  {
+    var config = new TimeCardSettings(
+      tbxApiAddress.Text,
+      tbxApiUser.Text,
+      tbxApiSchluessel.Text,
+      (int)nbxKeinExportGruppenId.Value
+    );
 
-            while (current <= abwesenheit.End)
-            {
-                if (
-                    current.DayOfWeek != DayOfWeek.Saturday
-                    && current.DayOfWeek != DayOfWeek.Sunday
-                )
-                    nettoDuration++;
+    _timeCardKonfigurationRepository
+      .Upsert(config)
+      .Match(
+        () => MessageBox.Show("Erfolgreich gespeichert"),
+        fehler => MessageBox.Show(fehler, "Fehler beim Speichern", MessageBoxButtons.OK, MessageBoxIcon.Error)
+      );
+  }
 
-                current = current.AddDays(1);
-            }
-            ;
+  private async void btnLoadConfiguration_Click(object sender, EventArgs e)
+  {
+    await LoadConfiguration();
+    UpdateDisplay();
+  }
 
-            foreach (var feiertag in feiertage)
-            {
-                if (feiertag <= abwesenheit.End && feiertag >= abwesenheit.Date)
-                    nettoDuration -= 1;
-            }
-
-            if (nettoDuration == 1)
-                nettoDuration = anzahlTage;
-
-            abwesenheiten.Add(
-                new AbwesenheitseintragOhneMapping<TimeCardAbsenceType>(
-                    name,
-                    int.Parse(nummer),
-                    timeCardAbwesenheit,
-                    abwesenheit.Date,
-                    abwesenheit.End,
-                    nettoDuration
-                )
-            );
-        }
-
-        return abwesenheiten.ToImmutableList();
-    }
-
-    private async Task<IImmutableList<TimeCardAbsence>> ReceiveAllAbsences(
-        DateTime start,
-        DateTime ende,
-        LoadingForm loadingForm
-    )
-    {
-        var current = start;
-
-        var total = (ende - start).Days + 1;
-
-        var absences = new List<TimeCardAbsence>();
-        while (current <= ende)
-        {
-            var daysLeft = (ende - current).Days + 1;
-            var daysDone = (float)total - daysLeft;
-            var percent = (int)Math.Round((daysDone) / (float)(total) * 100);
-            loadingForm.SetStatus($"{daysDone}/{total} Tage abgefragt", percent);
-
-            if (current.DayOfWeek != DayOfWeek.Saturday && current.DayOfWeek != DayOfWeek.Sunday)
-            {
-                var getAbsencesTask = await _timeCardService.AllAbsences(
-                    _employees.ToList(),
-                    current
-                );
-                absences.AddRange(getAbsencesTask);
-            }
-
-            current = current.AddDays(1);
-        }
-        loadingForm.Hide();
-        return absences.ToImmutableList();
-    }
-
-    private ImmutableList<DateTime> FilterHolidays(
-        IImmutableList<TimeCardAbsence> absences,
-        TimeCardAbsenceType holidayType
-    )
-    {
-        return _timeCardService.FilterHolidays(absences, holidayType);
-    }
-
-    private ImmutableList<GroupedTimeCardAbsence> GroupOngoingSingleDayEvents(
-        IImmutableList<TimeCardAbsence> absences,
-        TimeCardAbsenceType holidayType
-    )
-    {
-        return _timeCardService.GroupOngoingSingleDayEvents(absences, holidayType);
-    }
-
-    private async Task LoadConfiguration()
-    {
-        TimeCardService service = null;
-        IImmutableList<TimeCardEmployeesWithGroups> employees = null;
-        ImmutableHashSet<TimeCardAbsenceType> absenceTypes = null;
-
-        await _timeCardKonfigurationRepository
-            .Get()
-            .MapTry(
-                async config => service = await StartTimeCardService(config),
-                ex => "Verbindung zu TimeCard konnte nicht hergestellt werden"
-            )
-            .MapTry(
-                async timecardService => employees = await timecardService.AllEmployees(),
-                ex => "TimeCard Mitarbeiterliste konnte nicht abgerufen werden"
-            )
-            .MapTry(
-                async _ => absenceTypes = await service.GetAllAbsenceTypes(),
-                ex => "TimeCard Abwesenheitsliste konnte nicht abgerufen werden"
-            )
-            .TapError(DisplayError);
-
-        _timeCardService = service;
-        _employees = employees;
-        _absenceTypes = absenceTypes.ToHashSet();
-    }
-
-    private void UpdateDisplay()
-    {
-        DisplayConfiguration();
-        DisplayAbsenceTypeList();
-    }
-
-    private void DisplayError(string error)
-    {
-        LoadErrorMessage = error;
-        LoadedCorrectly = false;
-    }
-
-    private async Task DisplayConfiguration()
-    {
-        var config = await _timeCardKonfigurationRepository.Get();
-        if (config.IsFailure)
-            return;
-
-        tbxApiAddress.Text = config.Value.WebAddress;
-        tbxApiUser.Text = config.Value.Username;
-        tbxApiSchluessel.Text = config.Value.Password;
-        nbxKeinExportGruppenId.Value = config.Value.NoExportGroup;
-    }
-
-    private void DisplayAbsenceTypeList()
-    {
-        lbxAbsenceTypes.Items.Clear();
-        var orderedAbsenceArray = _absenceTypes.OrderBy(a => a.DisplayText).ToArray();
-        lbxAbsenceTypes.Items.AddRange(orderedAbsenceArray);
-    }
-
-    private async Task<TimeCardService> StartTimeCardService(TimeCardSettings timeCardSettings)
-    {
-        var timeCardService = await TimeCardService.Login(timeCardSettings);
-
-        return timeCardService;
-    }
-
-    private void btnStoreConfiguration_click(object sender, EventArgs e)
-    {
-        var config = new TimeCardSettings(
-            tbxApiAddress.Text,
-            tbxApiUser.Text,
-            tbxApiSchluessel.Text,
-            (int)nbxKeinExportGruppenId.Value
-        );
-
-        _timeCardKonfigurationRepository
-            .Upsert(config)
-            .Match(
-                () => MessageBox.Show("Erfolgreich gespeichert"),
-                fehler =>
-                    MessageBox.Show(
-                        fehler,
-                        "Fehler beim Speichern",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error
-                    )
-            );
-    }
-
-    private async void btnLoadConfiguration_Click(object sender, EventArgs e)
-    {
-        await LoadConfiguration();
-        UpdateDisplay();
-    }
-
-    public HashSet<TimeCardAbsenceType> GetAllAbsenceTypes() => _absenceTypes;
-
-    public UserControl GetControl() => this;
-
-    public bool HasLoadedCorrectly() => LoadedCorrectly;
-
-    public string GetLoadErrorMessage() => LoadErrorMessage;
-
-    private void TimeCardUserForm_Load(object sender, EventArgs e) { }
+  private void TimeCardUserForm_Load(object sender, EventArgs e) { }
 }

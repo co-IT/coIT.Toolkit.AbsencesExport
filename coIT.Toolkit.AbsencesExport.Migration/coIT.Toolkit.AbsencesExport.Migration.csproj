@@ -8,11 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\coIT.Toolkit.AbsencesExport.Infrastructure\coIT.Toolkit.AbsencesExport.Infrastructure.csproj" />
+    <ProjectReference Include="..\coIT.Toolkit.AbsencesExport.Infrastructure\coIT.Toolkit.AbsencesExport.Infrastructure.csproj"/>
   </ItemGroup>
 
   <ItemGroup>
