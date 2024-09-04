@@ -94,6 +94,15 @@ GDI:
 - Lohnfortzahlung ohne AU
 - Bescheinigung (mit AAG) krank
 
+### Exportmöglichkeiten
+
+Der Anwender kann abwesenheitstypen auf 3 verschiedene Zustände Mappen:
+
+1. Ausgeschlossene Verknüpfung (Wird gar nicht in der Tabelle angezeigt)
+2. Verknüpfung ohne Export (Wird in der Tabelle angezeigt aber nicht im Export übernommen)
+3. Verknüpfung mit Export (Wird in der Tabelle angezeigt und landet in der Export Datei)
+
+Je nach Workflow kann man sich verschiedene Konfigurationen vorbereiten und nach Bedarf zwischen ihnen wechseln.
 
 ### Extern benutzte Projekte/Libraries
 
